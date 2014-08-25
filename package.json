@@ -1,0 +1,19 @@
+{
+  "name": "web-reader",
+  "main": "./html/index.html",
+  "window": {
+    "title": "Web Reader",
+    "toolbar": true,
+    "width": 1150,
+    "height": 750,
+    "min_width": 550,
+    "min_height": 400
+  },
+  "dependencies": {
+    "cheerio": "^0.17.0",
+    "feedparser": "^0.19.1",
+    "moment": "^2.8.2",
+    "nedb": "^0.11.0",
+    "request": "^2.40.0"
+  }
+}
