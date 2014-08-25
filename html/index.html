@@ -7,7 +7,7 @@
     <style>
     	html, body { margin: 0; padding: 0; height: 100%; width: 100%; box-sizing: border-box; overflow: hidden; }
         div { box-sizing: border-box;  }
-        body, input, button { font-family: 'Segoe UI', sans-serif; font-size: 14px; }
+        body, input, button { font-family: 'Helvetica Neue', 'Segoe UI', sans-serif; font-size: 14px; }
         a, input, textarea, button, select, .button, .ctbutton, tr, .webr-feeditem { -webkit-transition: all .25s ease-in;
             -moz-transition: all .25s ease-in; -o-transition: all .25s ease-in;
             transition: all .25s ease-in; text-decoration: none; }
@@ -15,6 +15,7 @@
         a:hover { color: #0e0055; }
         button {  }
         input { padding: 5px; }
+        input[type='text'], input[type='password'], input[type='email'] { width: 200px; }
         input[type='text'], input[type='password'], input[type='email'], select {
             color: #222; border: 1px solid #bbb; background-color: white; }
         input[type='text']:hover, input[type='password']:hover, input[type='email']:hover, select:hover {
@@ -22,13 +23,15 @@
         input[type='text']:focus, input[type='password']:focus, input[type='email']:focus, select:focus {
             color: #000; border-color: #0045ff; background-color: #f6f6f6; outline: none; }
         button, .button { outline: 0 none; border: none; margin: 6px 0 3px;
-            padding: 4px 14px; border-radius: 2px; text-align: center; cursor: pointer; text-transform: uppercase;
+            padding: 6px 18px; border-radius: 2px; text-align: center; cursor: pointer; text-transform: uppercase;
             background-color: #0058c9; color: white; }
         button:hover, .button:hover { background-color: #003889; }
         button:focus, .button:focus { box-shadow: 0 0 5px rgba(0, 32, 88, 0.8); outline: none; }
         .ctbutton { color: #0064dd; }
         .ctbutton:hover { color: #002d74; }
         .button, .ctbutton { cursor: pointer; }
+        .hint { cursor: help; }
+        .required:after { content: ' *'; color: red }
         
         .webr-content { height: 100%; width: 100%; margin: 0 auto; }
         .webr-sidebar { position: absolute; top: 0; left: 0; bottom: 0; padding: 12px 6px; }
@@ -43,19 +46,20 @@
         .webr-maintext { padding: 6px; width: 100%; height: 70%; overflow-y: auto; }
         .webr-maintextitem-header { border-top: 2px solid #00b1ff; border-bottom: 2px solid #00b1ff; margin: 5px 0; padding: 5px 0; }
         .webr-maintextitem-title { float: left; font-size: 16px; font-weight: bold; }
-        .webr-maintextitem-date { float: right; }
+        .webr-maintextitem-date { float: right; margin-top: 2px; }
         .webr-maintextitem-body { padding: 7px; }
-        .webr-paragraph { margin: 5px 0; }
+        .webr-paragraph { margin: 5px 0; line-height: 1.4; }
         
         .webr-articlelist { padding: 8px; height: 30%; position: fixed; top: auto; bottom: 0; overflow-y: auto; border-top: 1px solid #ccc; }
         .webr-articlelist table { width: 100%; border-collapse: collapse; }
         .webr-articlelisttable { padding: 8px; width: 100%; }
-        .webr-articleitem { cursor: pointer; color: #555; width: 100%; border-bottom: 4px solid transparent; padding: 4px; }
+        .webr-articleitem { cursor: pointer; color: #555; width: 100%; border-bottom: 4px solid transparent; }
+        .webr-articleitem td { padding: 4px }
         .webr-articleitem:hover { color: black; background-color: #f4f4f4; }
         .webr-feeditem-selected, .webr-articleitem-selected { background-color: #e8e8e8; }
         .webr-feeditem-selected:hover, .webr-articleitem-selected:hover { background-color: #e8e8e8; }
-        .webr-article-title { width: 50%; margin-bottom: 6px; }
-        .webr-article-date { width: 25% }
+        .webr-articleitem-title { width: 50%; }
+        .webr-articleitem-date { width: 25%; }
         
         .webr-clearfix { clear: both; }
         
@@ -65,7 +69,7 @@
         .webr-ovd-inner {  display: table-cell; vertical-align: middle; text-align: center; }
         .webr-ovd-inner table { width: 340px; }
         .webr-ovd-inner td { text-align: left }
-        .webr-ovdtitle { font-size: 120%; font-weight: bold; }
+        .webr-ovdtitle { font-size: 120%; font-weight: bold; margin-bottom: 8px; }
     </style>
 </head>
 <body>
@@ -96,11 +100,11 @@
                 <div class="webr-ovd-inner">
                     <div class="webr-ovdtitle">Add New Feed</div>
                     <table><tbody>
-                        <tr><td><label for="webr-ovd-addfeed-name" title="Display name of this feed.">Name</label></td><td><input type="text" id="webr-ovd-addfeed-name"/></td></tr>
-                        <tr><td><label for="webr-ovd-addfeed-rss" title="URL of the RSS feed.">RSS URL</label></td><td><input type="text" id="webr-ovd-addfeed-rss"/></td></tr>
-                        <tr><td><label for="webr-ovd-addfeed-append" title="Text to append to article link before fetching it.">URL Append</label></td><td><input type="text" id="webr-ovd-addfeed-append"/></td></tr>
-                        <tr><td><label for="webr-ovd-addfeed-sel" title="CSS rules for elements to fetch from site, separated by '|'.">Selector</label></td><td><input type="text" id="webr-ovd-addfeed-sel"/></td></tr>
-                        <tr><td><label for="webr-ovd-addfeed-remove" title="CSS rules for elements to be removed, separated by '|'.">Remove Matches</label></td><td><input type="text" id="webr-ovd-addfeed-remove"/></td></tr>
+                        <tr><td><label class="hint required" for="webr-ovd-addfeed-name" title="Display name of this feed.">Name</label></td><td><input type="text" id="webr-ovd-addfeed-name"/></td></tr>
+                        <tr><td><label class="hint required" for="webr-ovd-addfeed-rss" title="URL of the RSS feed.">RSS URL</label></td><td><input type="text" id="webr-ovd-addfeed-rss"/></td></tr>
+                        <tr><td><label class="hint" for="webr-ovd-addfeed-append" title="Text to append to article link before fetching it.">URL Append</label></td><td><input type="text" id="webr-ovd-addfeed-append"/></td></tr>
+                        <tr><td><label class="hint" for="webr-ovd-addfeed-sel" title="CSS rules for elements to fetch from site, separated by '|'.">Selector</label></td><td><input type="text" id="webr-ovd-addfeed-sel"/></td></tr>
+                        <tr><td><label class="hint" for="webr-ovd-addfeed-remove" title="CSS rules for elements to be removed, separated by '|'.">Remove Matches</label></td><td><input type="text" id="webr-ovd-addfeed-remove"/></td></tr>
                         <tr><td></td><td><button id="webr-ovd-addfeed-submit">Add Feed</button></td></tr>
                     </tbody></table>
                 </div>
