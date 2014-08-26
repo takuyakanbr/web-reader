@@ -39,31 +39,82 @@ WEBR.Dialog = (function () {
         hide: hide
     };
 }());
+WEBR.Notify = (function () {
+    var $notifBox = $('.webr-notification-box'),
+        $notif = $('.webr-notification'),
+        createTime = -1,
+        lifeTime = 0;
+    
+    function hide() {
+        if (createTime > 0) {
+            $notifBox.fadeOut(400);
+            createTime = -1;
+        }
+    }
+    
+    function resize() {
+        var winWid = window.innerWidth;
+        var boxWid = $notifBox.width();
+        $notifBox.css({ top: 58, left: (winWid / 2) - (boxWid / 2) });
+    }
+    
+    setInterval(function () {
+        if (createTime > 0) {
+            if (new Date().getTime() > createTime + lifeTime) {
+                hide();
+            }
+        }
+    }, 400);
+    resize();
+    
+    return {
+        show: function (text, time) {
+            $notif.html(text);
+            resize();
+            $notifBox.fadeIn(400);
+            lifeTime = time;
+            createTime = new Date().getTime();
+        },
+        hide: hide,
+        resize: resize
+    };
+}());
 WEBR.Display = (function() {
     var db = WEBR.db,
         util = WEBR.util,
         moment = WEBR.moment;
     
+    var $articlelist = $('.webr-articlelisttable'),
+        $feedlist = $('.webr-feedlist'),
+        $headtitle = $('.webr-head-title'),
+        $headbuttons = $('.webr-head-buttons'),
+        $headbuttonsarticle = $('.webr-head-buttons-article');
+    
     // renders an article given feed ID and article link
-    function renderArticle(fid, link) {
+    function renderArticle(feed, link) {
         var $maintext = $('.webr-maintext');
         
-        if (!fid || !link) {
+        if (!feed || !link) {
             $maintext.html('No article selected.');
             return;
         }
         $maintext.html('Loading...');
         
-        var feed = db.feeds[fid];
         if (!feed) {
             $maintext.html('Article not found.');
             return;
         }
         
-        var post = db.findPost(feed.rss, link);
+        var post = db.findPost(feed, link);
         if (!post) {
             $maintext.html('Article not found.');
             return;
+        }
+        if (!post.read) {
+            post.read = new Date();
+            db.saveFeedContent(feed.rss);
+            if (feed.unread) feed.unread--;
+            updateFeedUnread(feed);
         }
         if (!feed.sel) { // no selector: use post.desc
             _doRenderArticle(post, post.desc);
@@ -78,29 +129,32 @@ WEBR.Display = (function() {
     
     function _doRenderArticle(post, article) {
         var $maintext = $('.webr-maintext');
-        var html = '<div class="webr-maintextitem"><div class="webr-maintextitem-header"><div class="webr-maintextitem-title">' + post.title + '</div><div class="webr-maintextitem-date">' + moment(post.date).format('DD MMM YYYY hh:mm:ss a') + '</div><div class="webr-clearfix"></div></div><div class="webr-maintextitem-body">' + article + '</div></div>'
+        var html = '<div class="webr-maintextitem"><div class="webr-maintextitem-header"><div class="webr-maintextitem-title">' + post.title + '</div><div class="webr-maintextitem-date">' + moment(post.date).format('DD MMM YYYY hh:mm:ss a') + '</div><div class="webr-clearfix"></div></div><div class="webr-maintextitem-body">' + article + '</div></div>';
+        $headbuttonsarticle.show();
         $maintext.html(html);
     }
     
     // resets list of articles
-    function renderArticleList(fid) {
-        var $articlelist = $('.webr-articlelisttable');
-        
-        if (!fid) {
+    function renderArticleList(feed) {
+        if (!feed) {
             $articlelist.html('No feed selected.');
             return;
         }
         
-        var feed = db.feeds[fid],
-            cont = db.content[feed.rss];
+        var cont = db.content[feed.rss];
         
+        $headbuttonsarticle.hide();
+        $headbuttons.show();
         $articlelist.html('');
         
         if (cont && cont.length > 0) {
             for (var i in cont) {
-                var $tr = $('<tr class="webr-articleitem"></tr>').data('link', cont[i].link).data('fid', fid);
+                var $tr = $('<tr class="webr-articleitem"></tr>').data('link', cont[i].link).data('rss', feed.rss);
                 $('<td class="webr-articleitem-title"></td>').html(cont[i].title).appendTo($tr);
                 $('<td class="webr-articleitem-date"></td>').html(moment(cont[i].date).format('DD MMM YYYY hh:mm:ss a')).appendTo($tr);
+                if (!cont[i].read) {
+                    $tr.addClass('webr-articleitem-unread');
+                }
                 $tr.appendTo($articlelist);
             }
         } else {
@@ -108,15 +162,52 @@ WEBR.Display = (function() {
         }
     }
     
+    function renderArticleControls(feed) {
+        if (!feed) {
+            $headtitle.text('');
+            $headbuttonsarticle.hide();
+            $headbuttons.hide();
+        } else {
+            $headbuttons.show();
+            $headtitle.text(feed.name);
+        }
+    }
+    
     // resets list of feeds
     function renderFeedList() {
-        var $feedlist = $('.webr-feedlist');
         $feedlist.html('');
         if (db.feeds.length == 0) {
             $('<div class="webr-feeditem></div>').html('No feeds added.').appendTo($feedlist);
         } else {
             for (var i in db.feeds) {
-                $('<a href="#">' + db.feeds[i].name + '</a>').data('id', i).appendTo($('<div class="webr-feeditem"></div>').data('id', i).appendTo($feedlist));
+                
+                // add each feed to feed list
+                var $feeditem = $('<div class="webr-feeditem"></div>').data('rss', db.feeds[i].rss);
+                $('<a href="#">' + db.feeds[i].name + '</a>').data('rss', db.feeds[i].rss).appendTo($feeditem);
+                if (db.feeds[i].unread) {
+                    $('<div class="webr-feeditem-unread"></div>').text(db.feeds[i].unread).appendTo($feeditem);
+                } else {
+                    $('<div class="webr-feeditem-unread"></div>').text(0).appendTo($feeditem).hide();
+                }
+                $feeditem.appendTo($feedlist);
+                
+            }
+        }
+    }
+    
+    function updateFeedUnread(feed) {
+        var $items = $('.webr-feeditem');
+        for (var i in $items) {
+            var $i = $($items[i]);
+            if ($i.data('rss') == feed.rss) {
+                // update unread counter
+                var $unread = $i.children('.webr-feeditem-unread');
+                if (feed.unread) {
+                    $unread.text(feed.unread).hide().fadeIn(600);
+                } else {
+                    $unread.text(0).fadeOut(600);
+                }
+                return;
             }
         }
     }
@@ -124,7 +215,9 @@ WEBR.Display = (function() {
     return {
         renderArticle: renderArticle,
         renderArticleList: renderArticleList,
-        renderFeedList: renderFeedList
+        renderArticleControls: renderArticleControls,
+        renderFeedList: renderFeedList,
+        updateFeedUnread: updateFeedUnread
     };
 }());
 
@@ -138,7 +231,7 @@ WEBR.Display = (function() {
         cheerio = WEBR.cheerio,
         moment = WEBR.moment;
     
-    var selectedFeed = -1,
+    var selectedFeed = null,
         wid = window.innerWidth,
         hgt = window.innerHeight;
     
@@ -149,6 +242,7 @@ WEBR.Display = (function() {
                 height = window.innerHeight;
             if (width != wid || height != hgt) {
                 setTimeout(doResize, 500);
+                WEBR.Notify.resize();
                 wid = width;
                 hgt = height;
             }
@@ -162,23 +256,48 @@ WEBR.Display = (function() {
             e.preventDefault();
             $('.webr-feeditem').removeClass('webr-feeditem-selected');
             $(this).parent().addClass('webr-feeditem-selected');
-            selectedFeed = $(this).data('id');
-            WEBR.Display.renderArticleList(selectedFeed);
+            var feed = db.findFeed($(this).data('rss'));
+            selectedFeed = feed;
+            WEBR.Display.renderArticleControls(feed);
+            WEBR.Display.renderArticleList(feed);
             WEBR.Display.renderArticle(null, null);
         });
         
         // clicked article list item
         $('.webr-articlelisttable').on('click', '.webr-articleitem', function (e) {
             e.preventDefault();
-            var fid = $(this).data('fid'),
+            var rss = $(this).data('rss'),
                 link = $(this).data('link');
             $('.webr-articleitem').removeClass('webr-articleitem-selected');
             $(this).addClass('webr-articleitem-selected');
-            WEBR.Display.renderArticle(fid, link);
+            $(this).removeClass('webr-articleitem-unread');
+            WEBR.Display.renderArticle(db.findFeed(rss), link);
         });
         
         $('#webr-ct-add').click(function () {
             WEBR.Dialog.show('addfeed');
+        });
+        $('#webr-ct-edit').click(function () {
+            //
+        });
+        $('#webr-ct-refresh').click(function () {
+            db.pullAllFeeds(true);
+        });
+        $('#webr-hdb-read').click(function () {
+            //mark-all-as-read TODO
+        });
+        
+        
+        $('#webr-ovd-addfeed-submit').click(function () {
+            var name = $('#webr-ovd-addfeed-name').val(),
+                rss = $('#webr-ovd-addfeed-rss').val();
+            if (name.length == 0 || rss.length < 4) {
+                WEBR.Notify.show('Please enter a name and link.', 1500);
+                return;
+            }
+            db.addFeed(name, rss, $('#webr-ovd-addfeed-append').val(),
+                      $('#webr-ovd-addfeed-sel').val(), $('#webr-ovd-addfeed-remove').val());
+            WEBR.Dialog.hide();
         });
     }
     
@@ -188,11 +307,12 @@ WEBR.Display = (function() {
         $('.webr-sidebar').css({width: sidebarWid});
         $('.webr-mainpage').css({width: wid - sidebarWid - 2, left: sidebarWid + 2});
         $('.webr-articlelist').css({width: wid - sidebarWid - 2});
+        $('.webr-maintext').css({height: $('.webr-maincontentarea').height() - 40 })
     }
     
-    setupHandlers();
-    db.loadData(nwgui, function () {
+    db.loadData(WEBR, nwgui, function () {
         WEBR.Display.renderFeedList();
+        setupHandlers();
     });
     
 }());

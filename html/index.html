@@ -6,9 +6,9 @@
     <link href="../fontawesome/css/font-awesome.min.css" rel="stylesheet">
     <style>
     	html, body { margin: 0; padding: 0; height: 100%; width: 100%; box-sizing: border-box; overflow: hidden; }
-        div { box-sizing: border-box;  }
+        div { box-sizing: border-box; margin: 0; padding: 0; }
         body, input, button { font-family: 'Helvetica Neue', 'Segoe UI', sans-serif; font-size: 14px; }
-        a, input, textarea, button, select, .button, .ctbutton, tr, .webr-feeditem { -webkit-transition: all .25s ease-in;
+        a, input, textarea, button, select, .button, .ctbutton, .hdbutton, tr, .webr-feeditem { -webkit-transition: all .25s ease-in;
             -moz-transition: all .25s ease-in; -o-transition: all .25s ease-in;
             transition: all .25s ease-in; text-decoration: none; }
         a { color: #0045ff }
@@ -36,26 +36,35 @@
         .webr-content { height: 100%; width: 100%; margin: 0 auto; }
         .webr-sidebar { position: absolute; top: 0; left: 0; bottom: 0; padding: 12px 6px; }
         .webr-sidebar-title { font-weight: bold; margin-bottom: 7px; padding: 0 0 0 10px; }
-        .webr-feeditem { padding: 4px 4px 4px 10px; border-radius: 4px; }
+        .webr-feeditem { position: relative; padding: 4px 4px 4px 10px; border-radius: 4px; }
         .webr-feeditem a { display: inline-block; width: 100%; }
+        .webr-feeditem-unread { position: absolute; top: 0; right: 0; border-radius: 2px; padding: 2px; font-weight: bold; z-index: 3;  margin: 1px 5px 0 }
         .webr-feeditem:hover { background-color: #f4f4f4; }
-        .webr-sidebar-controls { padding: 5px 10px; font-size: 21px; }
+        .webr-sidebar-controls { padding: 10px; font-size: 21px; }
         .webr-sidebar-controls div { margin-right: 10px; }
         
         .webr-mainpage { position: absolute; top: 0; bottom: 0; border-left: 1px solid #ccc }
-        .webr-maintext { padding: 6px; width: 100%; height: 70%; overflow-y: auto; }
-        .webr-maintextitem-header { border-top: 2px solid #00b1ff; border-bottom: 2px solid #00b1ff; margin: 5px 0; padding: 5px 0; }
+        .webr-maincontentarea { width: 100%; height: 70%; }
+        .webr-head-controls { position: relative; 6px; border-bottom: 1px solid #ccc; width: 100%; height: 40px; vertical-align: bottom; color: #07c }
+        .webr-head-title { position: absolute; font-size: 19px; font-weight: bold; bottom: 0; padding: 0 0 8px 6px; }
+        .webr-head-buttons { display: none; position: absolute; bottom: 0; right: 0; padding: 0 6px 8px 0; font-size: 23px; }
+        .webr-head-buttons div { margin-right: 10px; cursor: pointer; }
+        .webr-head-buttons div:hover { color: #004476; }
+        
+        .webr-maintext { padding: 15px 6px; overflow-y: auto; height: 100%; }
+        .webr-maintextitem-header { border-top: 2px solid #07c; border-bottom: 2px solid #07c; margin: 5px 0; padding: 5px; }
         .webr-maintextitem-title { float: left; font-size: 16px; font-weight: bold; }
         .webr-maintextitem-date { float: right; margin-top: 2px; }
-        .webr-maintextitem-body { padding: 7px; }
+        .webr-maintextitem-body { padding: 2px 7px 4px; }
         .webr-paragraph { margin: 5px 0; line-height: 1.4; }
         
-        .webr-articlelist { padding: 8px; height: 30%; position: fixed; top: auto; bottom: 0; overflow-y: auto; border-top: 1px solid #ccc; }
+        .webr-articlelist { padding: 8px; height: 30%; position: fixed; top: auto; bottom: 0; overflow-y: auto; border-top: 1px solid #ccc; z-index: 3; background: white; }
         .webr-articlelist table { width: 100%; border-collapse: collapse; }
         .webr-articlelisttable { padding: 8px; width: 100%; }
-        .webr-articleitem { cursor: pointer; color: #555; width: 100%; border-bottom: 4px solid transparent; }
-        .webr-articleitem td { padding: 4px }
+        .webr-articleitem { cursor: pointer; color: #555; width: 100%; }
+        .webr-articleitem td { padding: 5px }
         .webr-articleitem:hover { color: black; background-color: #f4f4f4; }
+        .webr-articleitem-unread { font-weight: bold; color: #222; }
         .webr-feeditem-selected, .webr-articleitem-selected { background-color: #e8e8e8; }
         .webr-feeditem-selected:hover, .webr-articleitem-selected:hover { background-color: #e8e8e8; }
         .webr-articleitem-title { width: 50%; }
@@ -70,11 +79,15 @@
         .webr-ovd-inner table { width: 340px; }
         .webr-ovd-inner td { text-align: left }
         .webr-ovdtitle { font-size: 120%; font-weight: bold; margin-bottom: 8px; }
+        
+        .webr-notification-box { max-width: 50%; position: absolute; z-index: 20000; display: none; -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); border: 1px solid #3888e2; top: 58px; left: 250px; background-color: white; color: #3888e2; padding: 6px 14px; }
     </style>
 </head>
 <body>
 
     <div class="webr-content">
+        
+        <!-- SIDEBAR -->
         <div class="webr-sidebar">
             <div class="webr-sidebar-title">Your Feeds</div>
             <div class="webr-feedlist">
@@ -86,16 +99,31 @@
                 <div title="Refresh" class="ctbutton fa fa-refresh" id="webr-ct-refresh"></div>
             </div>
         </div>
+        
+        <!-- MAIN CONTENT -->
         <div class="webr-mainpage">
-            <div class="webr-maintext">No article selected.</div>
+            <div class="webr-maincontentarea">
+                <div class="webr-head-controls">
+                    <div class="webr-head-title"></div>
+                    <div class="webr-head-buttons">
+                        <div title="Mark all as read" class="hdbutton fa fa-check-square-o" id="webr-hdb-read"></div>
+                        <div title="Save article" class="webr-head-buttons-article hdbutton fa fa-star-o" id="webr-hdb-star"></div>
+                    </div>
+                </div>
+                <div class="webr-maintext">No article selected.</div>
+            </div>
+            
             <div class="webr-articlelist"><table><tbody class="webr-articlelisttable">
                 <tr class="webr-articleitem"><td>No feed selected.</td></tr>
             </tbody></table></div>
         </div>
+        
     </div>
     
+    <!-- POPUP DIALOGS -->
     <div class="webr-overlay">
         <div class="webr-ovd-container">
+            
             <div class="webr-ovd" id="webr-ovd-addfeed">
                 <div class="webr-ovd-inner">
                     <div class="webr-ovdtitle">Add New Feed</div>
@@ -109,7 +137,13 @@
                     </tbody></table>
                 </div>
             </div>
+            
         </div>
+    </div>
+    
+    <!-- NOTIFICATIONS -->
+    <div class="webr-notification-box">
+        <div class="webr-notification"></div>
     </div>
 
     <script src="../js/main.js"></script>
