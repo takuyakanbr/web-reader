@@ -5,17 +5,28 @@
     <script src="../js/jquery-2.1.1.min.js"></script>
     <link href="../fontawesome/css/font-awesome.min.css" rel="stylesheet">
     <style>
+        @font-face {
+          font-family: 'Lato';
+          font-style: normal;
+          font-weight: 400;
+          src: local('Lato Regular'), local('Lato-Regular'), url(../resources/Lato400.woff) format('woff');
+        }
+        @font-face {
+          font-family: 'Lato';
+          font-style: normal;
+          font-weight: 700;
+          src: local('Lato Bold'), local('Lato-Bold'), url(../resources/Lato700.woff) format('woff');
+        }
+        
     	html, body { margin: 0; padding: 0; height: 100%; width: 100%; box-sizing: border-box; overflow: hidden; }
         div { box-sizing: border-box; margin: 0; padding: 0; }
-        body, input, button { font-family: 'Helvetica Neue', 'Segoe UI', sans-serif; font-size: 14px; }
+        body, input, button, select, option { font-family: 'Lato', sans-serif; font-size: 14px; font-weight: 400; }
         a, input, textarea, button, select, .button, .ctbutton, .hdbutton, tr, .webr-feeditem { -webkit-transition: all .25s ease-in;
             -moz-transition: all .25s ease-in; -o-transition: all .25s ease-in;
             transition: all .25s ease-in; text-decoration: none; }
         a { color: #0045ff }
         a:hover { color: #0e0055; }
-        button {  }
         input { padding: 5px; }
-        input[type='text'], input[type='password'], input[type='email'] { width: 200px; }
         input[type='text'], input[type='password'], input[type='email'], select {
             color: #222; border: 1px solid #bbb; background-color: white; }
         input[type='text']:hover, input[type='password']:hover, input[type='email']:hover, select:hover {
@@ -32,12 +43,13 @@
         .button, .ctbutton { cursor: pointer; }
         .hint { cursor: help; }
         .required:after { content: ' *'; color: red }
+        .webr-clearfix { clear: both; }
         
         .webr-content { height: 100%; width: 100%; margin: 0 auto; }
         .webr-sidebar { position: absolute; top: 0; left: 0; bottom: 0; padding: 12px 6px; }
-        .webr-sidebar-title { font-weight: bold; margin-bottom: 7px; padding: 0 0 0 10px; }
+        .webr-sidebar-title { font-weight: bold; margin-bottom: 7px; padding: 5px 0 0 10px; }
         .webr-feeditem { position: relative; padding: 4px 4px 4px 10px; border-radius: 4px; }
-        .webr-feeditem a { display: inline-block; width: 100%; }
+        .webr-feeditem a { display: inline-block; width: 90%; }
         .webr-feeditem-unread { position: absolute; top: 0; right: 0; border-radius: 2px; padding: 2px; font-weight: bold; z-index: 3;  margin: 1px 5px 0 }
         .webr-feeditem:hover { background-color: #f4f4f4; }
         .webr-sidebar-controls { padding: 10px; font-size: 21px; }
@@ -56,7 +68,8 @@
         .webr-maintextitem-title { float: left; font-size: 16px; font-weight: bold; }
         .webr-maintextitem-date { float: right; margin-top: 2px; }
         .webr-maintextitem-body { padding: 2px 7px 4px; }
-        .webr-paragraph { margin: 5px 0; line-height: 1.4; }
+        .webr-paragraph { margin: 6px 0; line-height: 1.4; }
+        .webr-paragraph img { max-width: 100%; }
         
         .webr-articlelist { padding: 8px; height: 30%; position: fixed; top: auto; bottom: 0; overflow-y: auto; border-top: 1px solid #ccc; z-index: 3; background: white; }
         .webr-articlelist table { width: 100%; border-collapse: collapse; }
@@ -70,15 +83,19 @@
         .webr-articleitem-title { width: 50%; }
         .webr-articleitem-date { width: 25%; }
         
-        .webr-clearfix { clear: both; }
-        
         .webr-overlay { display: none; position: fixed; top: 0; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.4); z-index: 10000; }
         .webr-ovd-container { position: relative; width: 100%; height: 100%; }
         .webr-ovd { display: table; z-index: 10010; padding: 10px; background: white; border-radius: 5px; width: 360px; height: 300px; text-align: center; vertical-align: middle; position: absolute; top: 50%; left: 50%; margin: -150px 0 0 -180px; }
         .webr-ovd-inner {  display: table-cell; vertical-align: middle; text-align: center; }
-        .webr-ovd-inner table { width: 340px; }
         .webr-ovd-inner td { text-align: left }
         .webr-ovdtitle { font-size: 120%; font-weight: bold; margin-bottom: 8px; }
+        #webr-ovd-addfeed input[type='text'] { width: 200px; }
+        #webr-ovd-addfeed table { width: 340px; }
+        #webr-ovd-editfeed { width: 480px; margin: -150px 0 0 -240px; }
+        #webr-ovd-editfeed input[type='text'], #webr-ovd-editfeed-select { width: 175px; }
+        #webr-ovd-editfeed-select { margin-right: 15px; }
+        #webr-ovd-editfeed-outertable { width: 460px; }
+        #webr-ovd-editfeed-innertable { width: 180px; }
         
         .webr-notification-box { max-width: 50%; position: absolute; z-index: 20000; display: none; -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); border: 1px solid #3888e2; top: 58px; left: 250px; background-color: white; color: #3888e2; padding: 6px 14px; }
     </style>
@@ -127,14 +144,33 @@
             <div class="webr-ovd" id="webr-ovd-addfeed">
                 <div class="webr-ovd-inner">
                     <div class="webr-ovdtitle">Add New Feed</div>
-                    <table><tbody>
-                        <tr><td><label class="hint required" for="webr-ovd-addfeed-name" title="Display name of this feed.">Name</label></td><td><input type="text" id="webr-ovd-addfeed-name"/></td></tr>
-                        <tr><td><label class="hint required" for="webr-ovd-addfeed-rss" title="URL of the RSS feed.">RSS URL</label></td><td><input type="text" id="webr-ovd-addfeed-rss"/></td></tr>
-                        <tr><td><label class="hint" for="webr-ovd-addfeed-append" title="Text to append to article link before fetching it.">URL Append</label></td><td><input type="text" id="webr-ovd-addfeed-append"/></td></tr>
-                        <tr><td><label class="hint" for="webr-ovd-addfeed-sel" title="CSS rules for elements to fetch from site, separated by '|'.">Selector</label></td><td><input type="text" id="webr-ovd-addfeed-sel"/></td></tr>
-                        <tr><td><label class="hint" for="webr-ovd-addfeed-remove" title="CSS rules for elements to be removed, separated by '|'.">Remove Matches</label></td><td><input type="text" id="webr-ovd-addfeed-remove"/></td></tr>
-                        <tr><td></td><td><button id="webr-ovd-addfeed-submit">Add Feed</button></td></tr>
+                    <table id="webr-ovd-addfeed-table"><tbody>
+                    <tr><td><label class="hint required" for="webr-ovd-addfeed-name" title="Display name of this feed.">Name</label></td><td><input type="text" id="webr-ovd-addfeed-name"/></td></tr>
+                    <tr><td><label class="hint required" for="webr-ovd-addfeed-rss" title="URL of the RSS feed.">RSS URL</label></td><td><input type="text" id="webr-ovd-addfeed-rss"/></td></tr>
+                    <tr><td><label class="hint" for="webr-ovd-addfeed-append" title="Text to append to article link before fetching it.">URL Append</label></td><td><input type="text" id="webr-ovd-addfeed-append"/></td></tr>
+                    <tr><td><label class="hint" for="webr-ovd-addfeed-sel" title="CSS rules for elements to fetch from site, separated by '|'.">Selector</label></td><td><input type="text" id="webr-ovd-addfeed-sel"/></td></tr>
+                    <tr><td><label class="hint" for="webr-ovd-addfeed-remove" title="CSS rules for elements to be removed, separated by '|'.">Remove Matches</label></td><td><input type="text" id="webr-ovd-addfeed-remove"/></td></tr>
+                    <tr><td></td><td><button id="webr-ovd-addfeed-submit">Add Feed</button></td></tr>
                     </tbody></table>
+                </div>
+            </div>
+            
+            <div class="webr-ovd" id="webr-ovd-editfeed">
+                <div class="webr-ovd-inner">
+                    <div class="webr-ovdtitle">Edit Feeds</div>
+                    <table id="webr-ovd-editfeed-outertable"><tbody><tr><td style="width: 150px"> <!-- selector -->
+                        <select id="webr-ovd-editfeed-select" size="10"></select>
+                        <br/><button id="webr-ovd-editfeed-up">&uarr;</button> &nbsp;<button id="webr-ovd-editfeed-down">&darr;</button>
+                    </td><td> <!-- input boxes -->
+                        <table id="webr-ovd-editfeed-innertable"><tbody>
+                        <tr><td><label class="hint required" for="webr-ovd-editfeed-name" title="Display name of this feed.">Name</label></td><td><input type="text" id="webr-ovd-editfeed-name"/></td></tr>
+                        <tr><td><label class="hint" for="webr-ovd-editfeed-rss" title="URL of the RSS feed.">URL</label></td><td><input type="text" id="webr-ovd-editfeed-rss" readonly/></td></tr>
+                        <tr><td><label class="hint" for="webr-ovd-editfeed-append" title="Text to append to article link before fetching it.">URL Append</label></td><td><input type="text" id="webr-ovd-editfeed-append"/></td></tr>
+                        <tr><td><label class="hint" for="webr-ovd-editfeed-sel" title="CSS rules for elements to fetch from site, separated by '|'.">Selector</label></td><td><input type="text" id="webr-ovd-editfeed-sel"/></td></tr>
+                        <tr><td><label class="hint" for="webr-ovd-editfeed-remove" title="CSS rules for elements to be removed, separated by '|'.">Remove Matches</label></td><td><input type="text" id="webr-ovd-editfeed-remove"/></td></tr>
+                        <tr><td></td><td><button id="webr-ovd-editfeed-submit">Edit</button> &nbsp;<button id="webr-ovd-editfeed-remove">Remove</button></td></tr>
+                        </tbody></table>
+                    </td></tr></tbody></table>
                 </div>
             </div>
             

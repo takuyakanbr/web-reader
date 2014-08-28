@@ -8,12 +8,13 @@ WEBR = {
 WEBR.Dialog = (function () {
     var $overlay = $('.webr-overlay'),
         isActive = false,
-        activeDialog = null;
+        activeDialog = null,
+        db = WEBR.db;
     
     function hide() {
         if (isActive) {
-            activeDialog.fadeOut(400);
-            $overlay.fadeOut(400);
+            activeDialog.fadeOut(300);
+            $overlay.fadeOut(300);
             activeDialog = null;
             isActive = false;
         }
@@ -24,7 +25,42 @@ WEBR.Dialog = (function () {
         if (e.keyCode == 27) { // 'ESC' key
             hide();
         }
-    })
+    });
+    
+    
+    function getEditFeedSelectedFeed() {
+        return db.findFeed($('.webr-ovd-editfeed-option:selected').data('rss'));
+    }
+    
+    // reset list of feeds in feed selector, keeping the previous selected if possible
+    function refreshEditFeedSelector() {
+        var feed = getEditFeedSelectedFeed();
+        var $select = $('#webr-ovd-editfeed-select').html('');
+        for (var i in db.feeds) {
+            var opt = $('<option class="webr-ovd-editfeed-option"></option>').text(db.feeds[i].name).data('rss', db.feeds[i].rss).appendTo($select);
+            if (feed && feed.rss == db.feeds[i].rss) {
+                opt.prop('selected', true);
+            }
+        }
+        refreshEditFeedData();
+    }
+    
+    function refreshEditFeedData() {
+        var feed = getEditFeedSelectedFeed();
+        if (feed) {
+            $('#webr-ovd-editfeed-name').val(feed.name);
+            $('#webr-ovd-editfeed-rss').val(feed.rss);
+            $('#webr-ovd-editfeed-append').val(feed.append);
+            $('#webr-ovd-editfeed-sel').val(feed.sel);
+            $('#webr-ovd-editfeed-remove').val(feed.remove);
+        } else {
+            $('#webr-ovd-editfeed-name').val('');
+            $('#webr-ovd-editfeed-rss').val('');
+            $('#webr-ovd-editfeed-append').val('');
+            $('#webr-ovd-editfeed-sel').val('');
+            $('#webr-ovd-editfeed-remove').val('');
+        }
+    }
     
     return {
         show: function (dialogName) {
@@ -32,11 +68,14 @@ WEBR.Dialog = (function () {
                 activeDialog.hide();
             }
             isActive = true;
-            $overlay.fadeIn(400);
+            $overlay.fadeIn(300);
             activeDialog = $('#webr-ovd-' + dialogName);
-            activeDialog.fadeIn(400);
+            activeDialog.fadeIn(300);
         },
-        hide: hide
+        hide: hide,
+        getEditFeedSelectedFeed: getEditFeedSelectedFeed,
+        refreshEditFeedSelector: refreshEditFeedSelector,
+        refreshEditFeedData: refreshEditFeedData
     };
 }());
 WEBR.Notify = (function () {
@@ -88,24 +127,29 @@ WEBR.Display = (function() {
         $feedlist = $('.webr-feedlist'),
         $headtitle = $('.webr-head-title'),
         $headbuttons = $('.webr-head-buttons'),
-        $headbuttonsarticle = $('.webr-head-buttons-article');
+        $headbuttonsarticle = $('.webr-head-buttons-article'),
+        displayedFeed = null,
+        displayedPost = null;
     
     // renders an article given feed ID and article link
     function renderArticle(feed, link) {
         var $maintext = $('.webr-maintext');
         
         if (!feed || !link) {
+            displayedPost = null;
             $maintext.html('No article selected.');
             return;
         }
         $maintext.html('Loading...');
         
         if (!feed) {
+            displayedPost = null;
             $maintext.html('Article not found.');
             return;
         }
         
         var post = db.findPost(feed, link);
+        displayedPost = post;
         if (!post) {
             $maintext.html('Article not found.');
             return;
@@ -114,7 +158,9 @@ WEBR.Display = (function() {
             post.read = new Date();
             db.saveFeedContent(feed.rss);
             if (feed.unread) feed.unread--;
-            updateFeedUnread(feed);
+            if (feed.read) feed.read++;
+            else feed.read = 1;
+            updateUnreadCount(feed);
         }
         if (!feed.sel) { // no selector: use post.desc
             _doRenderArticle(post, post.desc);
@@ -136,17 +182,18 @@ WEBR.Display = (function() {
     
     // resets list of articles
     function renderArticleList(feed) {
+        displayedFeed = feed;
         if (!feed) {
             $articlelist.html('No feed selected.');
             return;
         }
         
-        var cont = db.content[feed.rss];
-        
         $headbuttonsarticle.hide();
         $headbuttons.show();
+        displayedPost = null;
         $articlelist.html('');
         
+        var cont = db.content[feed.rss];
         if (cont && cont.length > 0) {
             for (var i in cont) {
                 var $tr = $('<tr class="webr-articleitem"></tr>').data('link', cont[i].link).data('rss', feed.rss);
@@ -158,7 +205,32 @@ WEBR.Display = (function() {
                 $tr.appendTo($articlelist);
             }
         } else {
-            $('<tr><td>No articles found.</td></tr>').appendTo($articlelist);
+            $('<tr class="webr-articleitem"><td>No articles found.</td></tr>').appendTo($articlelist);
+        }
+    }
+    
+    // refresh the article list if feed matches displayedFeed
+    function refreshArticleList(feed) {
+        if (!feed || !displayedFeed) return;
+        if (feed.rss != displayedFeed.rss) return;
+        
+        $articlelist.html('');
+        var cont = db.content[feed.rss];
+        if (cont && cont.length > 0) {
+            for (var i in cont) {
+                var $tr = $('<tr class="webr-articleitem"></tr>').data('link', cont[i].link).data('rss', feed.rss);
+                $('<td class="webr-articleitem-title"></td>').html(cont[i].title).appendTo($tr);
+                $('<td class="webr-articleitem-date"></td>').html(moment(cont[i].date).format('DD MMM YYYY hh:mm:ss a')).appendTo($tr);
+                if (!cont[i].read) {
+                    $tr.addClass('webr-articleitem-unread');
+                }
+                if (displayedPost && displayedPost.link == cont[i].link) {
+                    $tr.addClass('webr-articleitem-selected');
+                }
+                $tr.appendTo($articlelist);
+            }
+        } else {
+            $('<tr class="webr-articleitem"><td>No articles found.</td></tr>').appendTo($articlelist);
         }
     }
     
@@ -189,13 +261,17 @@ WEBR.Display = (function() {
                 } else {
                     $('<div class="webr-feeditem-unread"></div>').text(0).appendTo($feeditem).hide();
                 }
+                if (displayedFeed && displayedFeed.rss == db.feeds[i].rss) {
+                    $feeditem.addClass('webr-feeditem-selected');
+                }
                 $feeditem.appendTo($feedlist);
                 
             }
         }
     }
     
-    function updateFeedUnread(feed) {
+    function updateUnreadCount(feed) {
+        if (!feed) return;
         var $items = $('.webr-feeditem');
         for (var i in $items) {
             var $i = $($items[i]);
@@ -213,11 +289,14 @@ WEBR.Display = (function() {
     }
     
     return {
+        getDisplayedFeed: function() { return displayedFeed },
+        getDisplayedPost: function() { return displayedPost },
         renderArticle: renderArticle,
         renderArticleList: renderArticleList,
+        refreshArticleList: refreshArticleList,
         renderArticleControls: renderArticleControls,
         renderFeedList: renderFeedList,
-        updateFeedUnread: updateFeedUnread
+        updateUnreadCount: updateUnreadCount
     };
 }());
 
@@ -231,8 +310,7 @@ WEBR.Display = (function() {
         cheerio = WEBR.cheerio,
         moment = WEBR.moment;
     
-    var selectedFeed = null,
-        wid = window.innerWidth,
+    var wid = window.innerWidth,
         hgt = window.innerHeight;
     
     
@@ -257,7 +335,6 @@ WEBR.Display = (function() {
             $('.webr-feeditem').removeClass('webr-feeditem-selected');
             $(this).parent().addClass('webr-feeditem-selected');
             var feed = db.findFeed($(this).data('rss'));
-            selectedFeed = feed;
             WEBR.Display.renderArticleControls(feed);
             WEBR.Display.renderArticleList(feed);
             WEBR.Display.renderArticle(null, null);
@@ -274,17 +351,25 @@ WEBR.Display = (function() {
             WEBR.Display.renderArticle(db.findFeed(rss), link);
         });
         
+        
         $('#webr-ct-add').click(function () {
             WEBR.Dialog.show('addfeed');
         });
         $('#webr-ct-edit').click(function () {
-            //
+            WEBR.Dialog.refreshEditFeedSelector();
+            WEBR.Dialog.show('editfeed');
         });
         $('#webr-ct-refresh').click(function () {
             db.pullAllFeeds(true);
         });
         $('#webr-hdb-read').click(function () {
-            //mark-all-as-read TODO
+            var feed = WEBR.Display.getDisplayedFeed();
+            var updated = db.markAllAsRead(feed);
+            WEBR.Notify.show(updated + ' articles marked as read.', 1500);
+            WEBR.Display.updateUnreadCount(feed);
+        });
+        $('#webr-hdb-star').click(function () {
+            // TODO - SAVE ARTICLE
         });
         
         
@@ -298,6 +383,46 @@ WEBR.Display = (function() {
             db.addFeed(name, rss, $('#webr-ovd-addfeed-append').val(),
                       $('#webr-ovd-addfeed-sel').val(), $('#webr-ovd-addfeed-remove').val());
             WEBR.Dialog.hide();
+        });
+        $('#webr-ovd-editfeed-submit').click(function () {
+            var feed = WEBR.Dialog.getEditFeedSelectedFeed();
+            if (feed) {
+                var name = $('#webr-ovd-editfeed-name').val();
+                if (name.length == 0) {
+                    WEBR.Notify.show('Please enter a valid name.', 1500);
+                    return;
+                }
+                feed.name = name;
+                feed.append = $('#webr-ovd-editfeed-append').val();
+                feed.sel = $('#webr-ovd-editfeed-sel').val();
+                feed.remove = $('#webr-ovd-editfeed-remove').val();
+                WEBR.Notify.show('Feed information updated.', 1500);
+                db.saveFeedList();
+                WEBR.Display.renderFeedList();
+                WEBR.Dialog.hide();
+            } else {
+                WEBR.Notify.show('Please select a feed.', 1500);
+            }
+        });
+        $('#webr-ovd-editfeed-remove').click(function () {
+            // TODO - REMOVE FEED
+        });
+        $('#webr-ovd-editfeed-select').change(function () {
+            WEBR.Dialog.refreshEditFeedData();
+        });
+        $('#webr-ovd-editfeed-up').click(function () {
+            var feed = WEBR.Dialog.getEditFeedSelectedFeed(),
+                ind = db.getFeedIndex(feed);
+            db.swapFeedsByIndex(ind - 1, ind);
+            WEBR.Dialog.refreshEditFeedSelector();
+            WEBR.Display.renderFeedList();
+        });
+        $('#webr-ovd-editfeed-down').click(function () {
+            var feed = WEBR.Dialog.getEditFeedSelectedFeed(),
+                ind = db.getFeedIndex(feed);
+            db.swapFeedsByIndex(ind, ind++);
+            WEBR.Dialog.refreshEditFeedSelector();
+            WEBR.Display.renderFeedList();
         });
     }
     

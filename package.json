@@ -4,9 +4,9 @@
   "window": {
     "title": "Web Reader",
     "toolbar": true,
-    "width": 1150,
+    "width": 1200,
     "height": 750,
-    "min_width": 550,
+    "min_width": 650,
     "min_height": 400
   },
   "dependencies": {
