@@ -3,7 +3,8 @@
   "main": "./html/index.html",
   "window": {
     "title": "Web Reader",
-    "toolbar": true,
+    "toolbar": false,
+    "frame": false,
     "width": 1200,
     "height": 750,
     "min_width": 650,

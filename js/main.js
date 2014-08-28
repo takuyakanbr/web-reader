@@ -311,7 +311,8 @@ WEBR.Display = (function() {
         moment = WEBR.moment;
     
     var wid = window.innerWidth,
-        hgt = window.innerHeight;
+        hgt = window.innerHeight,
+        guiWindow = nwgui.Window.get();;
     
     
     function setupHandlers() {
@@ -328,6 +329,23 @@ WEBR.Display = (function() {
         doResize();
         setInterval(db.pullAllFeeds, 60000);
         window.onresize = heightChangeCallback;
+        window.onfocus = function () {
+            $('.webr-window').css('border', '2px solid #3c3f41');
+            $('.webr-topbar').css('background-color', '#3c3f41');
+            $('.webr-articlelist').css('border-bottom', '2px solid #3c3f41');
+        };
+        window.onblur = function () {
+            $('.webr-window').css('border', '2px solid #555759');
+            $('.webr-topbar').css('background-color', '#555759');
+            $('.webr-articlelist').css('border-bottom', '2px solid #555759');
+        };
+        $('#webr-topbar-close').click(function () {
+            guiWindow.close();
+        });
+        $('#webr-topbar-min').click(function () {
+            guiWindow.minimize();
+        });
+        
         
         // clicked feed list item
         $('.webr-feedlist').on('click', '.webr-feeditem a', function (e) {
@@ -429,10 +447,10 @@ WEBR.Display = (function() {
     function doResize() {
         var sidebarWid = wid * 0.3;
         if (sidebarWid > 300) sidebarWid = 300;
-        $('.webr-sidebar').css({width: sidebarWid});
-        $('.webr-mainpage').css({width: wid - sidebarWid - 2, left: sidebarWid + 2});
-        $('.webr-articlelist').css({width: wid - sidebarWid - 2});
-        $('.webr-maintext').css({height: $('.webr-maincontentarea').height() - 40 })
+        $('.webr-sidebar').css({ width: sidebarWid });
+        $('.webr-mainpage').css({ width: wid - sidebarWid - 2 - 4, left: sidebarWid + 2 });
+        $('.webr-articlelist').css({ width: wid - sidebarWid - 2 - 5 });
+        $('.webr-maintext').css({ height: $('.webr-maincontentarea').height() - 40 });
     }
     
     db.loadData(WEBR, nwgui, function () {

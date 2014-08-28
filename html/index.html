@@ -4,104 +4,13 @@
     <title>Web Reader</title>
     <script src="../js/jquery-2.1.1.min.js"></script>
     <link href="../fontawesome/css/font-awesome.min.css" rel="stylesheet">
-    <style>
-        @font-face {
-          font-family: 'Lato';
-          font-style: normal;
-          font-weight: 400;
-          src: local('Lato Regular'), local('Lato-Regular'), url(../resources/Lato400.woff) format('woff');
-        }
-        @font-face {
-          font-family: 'Lato';
-          font-style: normal;
-          font-weight: 700;
-          src: local('Lato Bold'), local('Lato-Bold'), url(../resources/Lato700.woff) format('woff');
-        }
-        
-    	html, body { margin: 0; padding: 0; height: 100%; width: 100%; box-sizing: border-box; overflow: hidden; }
-        div { box-sizing: border-box; margin: 0; padding: 0; }
-        body, input, button, select, option { font-family: 'Lato', sans-serif; font-size: 14px; font-weight: 400; }
-        a, input, textarea, button, select, .button, .ctbutton, .hdbutton, tr, .webr-feeditem { -webkit-transition: all .25s ease-in;
-            -moz-transition: all .25s ease-in; -o-transition: all .25s ease-in;
-            transition: all .25s ease-in; text-decoration: none; }
-        a { color: #0045ff }
-        a:hover { color: #0e0055; }
-        input { padding: 5px; }
-        input[type='text'], input[type='password'], input[type='email'], select {
-            color: #222; border: 1px solid #bbb; background-color: white; }
-        input[type='text']:hover, input[type='password']:hover, input[type='email']:hover, select:hover {
-            color: #000; border: 1px solid #888; background-color: white; }
-        input[type='text']:focus, input[type='password']:focus, input[type='email']:focus, select:focus {
-            color: #000; border-color: #0045ff; background-color: #f6f6f6; outline: none; }
-        button, .button { outline: 0 none; border: none; margin: 6px 0 3px;
-            padding: 6px 18px; border-radius: 2px; text-align: center; cursor: pointer; text-transform: uppercase;
-            background-color: #0058c9; color: white; }
-        button:hover, .button:hover { background-color: #003889; }
-        button:focus, .button:focus { box-shadow: 0 0 5px rgba(0, 32, 88, 0.8); outline: none; }
-        .ctbutton { color: #0064dd; }
-        .ctbutton:hover { color: #002d74; }
-        .button, .ctbutton { cursor: pointer; }
-        .hint { cursor: help; }
-        .required:after { content: ' *'; color: red }
-        .webr-clearfix { clear: both; }
-        
-        .webr-content { height: 100%; width: 100%; margin: 0 auto; }
-        .webr-sidebar { position: absolute; top: 0; left: 0; bottom: 0; padding: 12px 6px; }
-        .webr-sidebar-title { font-weight: bold; margin-bottom: 7px; padding: 5px 0 0 10px; }
-        .webr-feeditem { position: relative; padding: 4px 4px 4px 10px; border-radius: 4px; }
-        .webr-feeditem a { display: inline-block; width: 90%; }
-        .webr-feeditem-unread { position: absolute; top: 0; right: 0; border-radius: 2px; padding: 2px; font-weight: bold; z-index: 3;  margin: 1px 5px 0 }
-        .webr-feeditem:hover { background-color: #f4f4f4; }
-        .webr-sidebar-controls { padding: 10px; font-size: 21px; }
-        .webr-sidebar-controls div { margin-right: 10px; }
-        
-        .webr-mainpage { position: absolute; top: 0; bottom: 0; border-left: 1px solid #ccc }
-        .webr-maincontentarea { width: 100%; height: 70%; }
-        .webr-head-controls { position: relative; 6px; border-bottom: 1px solid #ccc; width: 100%; height: 40px; vertical-align: bottom; color: #07c }
-        .webr-head-title { position: absolute; font-size: 19px; font-weight: bold; bottom: 0; padding: 0 0 8px 6px; }
-        .webr-head-buttons { display: none; position: absolute; bottom: 0; right: 0; padding: 0 6px 8px 0; font-size: 23px; }
-        .webr-head-buttons div { margin-right: 10px; cursor: pointer; }
-        .webr-head-buttons div:hover { color: #004476; }
-        
-        .webr-maintext { padding: 15px 6px; overflow-y: auto; height: 100%; }
-        .webr-maintextitem-header { border-top: 2px solid #07c; border-bottom: 2px solid #07c; margin: 5px 0; padding: 5px; }
-        .webr-maintextitem-title { float: left; font-size: 16px; font-weight: bold; }
-        .webr-maintextitem-date { float: right; margin-top: 2px; }
-        .webr-maintextitem-body { padding: 2px 7px 4px; }
-        .webr-paragraph { margin: 6px 0; line-height: 1.4; }
-        .webr-paragraph img { max-width: 100%; }
-        
-        .webr-articlelist { padding: 8px; height: 30%; position: fixed; top: auto; bottom: 0; overflow-y: auto; border-top: 1px solid #ccc; z-index: 3; background: white; }
-        .webr-articlelist table { width: 100%; border-collapse: collapse; }
-        .webr-articlelisttable { padding: 8px; width: 100%; }
-        .webr-articleitem { cursor: pointer; color: #555; width: 100%; }
-        .webr-articleitem td { padding: 5px }
-        .webr-articleitem:hover { color: black; background-color: #f4f4f4; }
-        .webr-articleitem-unread { font-weight: bold; color: #222; }
-        .webr-feeditem-selected, .webr-articleitem-selected { background-color: #e8e8e8; }
-        .webr-feeditem-selected:hover, .webr-articleitem-selected:hover { background-color: #e8e8e8; }
-        .webr-articleitem-title { width: 50%; }
-        .webr-articleitem-date { width: 25%; }
-        
-        .webr-overlay { display: none; position: fixed; top: 0; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.4); z-index: 10000; }
-        .webr-ovd-container { position: relative; width: 100%; height: 100%; }
-        .webr-ovd { display: table; z-index: 10010; padding: 10px; background: white; border-radius: 5px; width: 360px; height: 300px; text-align: center; vertical-align: middle; position: absolute; top: 50%; left: 50%; margin: -150px 0 0 -180px; }
-        .webr-ovd-inner {  display: table-cell; vertical-align: middle; text-align: center; }
-        .webr-ovd-inner td { text-align: left }
-        .webr-ovdtitle { font-size: 120%; font-weight: bold; margin-bottom: 8px; }
-        #webr-ovd-addfeed input[type='text'] { width: 200px; }
-        #webr-ovd-addfeed table { width: 340px; }
-        #webr-ovd-editfeed { width: 480px; margin: -150px 0 0 -240px; }
-        #webr-ovd-editfeed input[type='text'], #webr-ovd-editfeed-select { width: 175px; }
-        #webr-ovd-editfeed-select { margin-right: 15px; }
-        #webr-ovd-editfeed-outertable { width: 460px; }
-        #webr-ovd-editfeed-innertable { width: 180px; }
-        
-        .webr-notification-box { max-width: 50%; position: absolute; z-index: 20000; display: none; -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); border: 1px solid #3888e2; top: 58px; left: 250px; background-color: white; color: #3888e2; padding: 6px 14px; }
-    </style>
+    <link href="../css/main.css" rel="stylesheet">
 </head>
 <body>
 
+    <div class="webr-window">
+    <div class="webr-topbar"><span id="webr-topbar-close">&times;</span><span id="webr-topbar-min">&minus;</span></div>
+    
     <div class="webr-content">
         
         <!-- SIDEBAR -->
@@ -175,6 +84,8 @@
             </div>
             
         </div>
+    </div>
+    
     </div>
     
     <!-- NOTIFICATIONS -->
