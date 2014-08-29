@@ -32,17 +32,30 @@ WEBR.Dialog = (function () {
         return db.findFeed($('.webr-ovd-editfeed-option:selected').data('rss'));
     }
     
+    function getSuggestFeedSelectedFeed() {
+        return $('.webr-ovd-suggest-option:selected').data('feed');
+    }
+    
     // reset list of feeds in feed selector, keeping the previous selected if possible
     function refreshEditFeedSelector() {
-        var feed = getEditFeedSelectedFeed();
-        var $select = $('#webr-ovd-editfeed-select').html('');
-        for (var i in db.feeds) {
-            var opt = $('<option class="webr-ovd-editfeed-option"></option>').text(db.feeds[i].name).data('rss', db.feeds[i].rss).appendTo($select);
-            if (feed && feed.rss == db.feeds[i].rss) {
+        var feeds = db.feeds(),
+            feed = getEditFeedSelectedFeed(),
+            $select = $('#webr-ovd-editfeed-select').html('');
+        for (var i in feeds) {
+            var opt = $('<option class="webr-ovd-editfeed-option"></option>').text(feeds[i].name).data('rss', feeds[i].rss).appendTo($select);
+            if (feed && feed.rss == feeds[i].rss) {
                 opt.prop('selected', true);
             }
         }
         refreshEditFeedData();
+    }
+    
+    function refreshSuggestFeedSelector() {
+        var suggs = db.suggestions,
+            $select = $('#webr-ovd-suggest-select').html('');
+        for (var i = 0; i < suggs.length; i++) {
+            $('<option class="webr-ovd-suggest-option"></option>').text(suggs[i].name).data('feed', suggs[i]).appendTo($select);
+        }
     }
     
     function refreshEditFeedData() {
@@ -74,7 +87,9 @@ WEBR.Dialog = (function () {
         },
         hide: hide,
         getEditFeedSelectedFeed: getEditFeedSelectedFeed,
+        getSuggestFeedSelectedFeed: getSuggestFeedSelectedFeed,
         refreshEditFeedSelector: refreshEditFeedSelector,
+        refreshSuggestFeedSelector: refreshSuggestFeedSelector,
         refreshEditFeedData: refreshEditFeedData
     };
 }());
@@ -183,6 +198,7 @@ WEBR.Display = (function() {
     // resets list of articles
     function renderArticleList(feed) {
         displayedFeed = feed;
+        renderArticleControls(feed);
         if (!feed) {
             $articlelist.html('No feed selected.');
             return;
@@ -247,21 +263,22 @@ WEBR.Display = (function() {
     
     // resets list of feeds
     function renderFeedList() {
+        var feeds = db.feeds();
         $feedlist.html('');
-        if (db.feeds.length == 0) {
+        if (feeds.length == 0) {
             $('<div class="webr-feeditem></div>').html('No feeds added.').appendTo($feedlist);
         } else {
-            for (var i in db.feeds) {
+            for (var i in feeds) {
                 
                 // add each feed to feed list
-                var $feeditem = $('<div class="webr-feeditem"></div>').data('rss', db.feeds[i].rss);
-                $('<a href="#">' + db.feeds[i].name + '</a>').data('rss', db.feeds[i].rss).appendTo($feeditem);
-                if (db.feeds[i].unread) {
-                    $('<div class="webr-feeditem-unread"></div>').text(db.feeds[i].unread).appendTo($feeditem);
+                var $feeditem = $('<div class="webr-feeditem"></div>').data('rss', feeds[i].rss);
+                $('<a href="#">' + feeds[i].name + '</a>').data('rss', feeds[i].rss).appendTo($feeditem);
+                if (feeds[i].unread) {
+                    $('<div class="webr-feeditem-unread"></div>').text(feeds[i].unread).appendTo($feeditem);
                 } else {
                     $('<div class="webr-feeditem-unread"></div>').text(0).appendTo($feeditem).hide();
                 }
-                if (displayedFeed && displayedFeed.rss == db.feeds[i].rss) {
+                if (displayedFeed && displayedFeed.rss == feeds[i].rss) {
                     $feeditem.addClass('webr-feeditem-selected');
                 }
                 $feeditem.appendTo($feedlist);
@@ -273,7 +290,7 @@ WEBR.Display = (function() {
     function updateUnreadCount(feed) {
         if (!feed) return;
         var $items = $('.webr-feeditem');
-        for (var i in $items) {
+        for (var i = 0; i < $items.length; i++) {
             var $i = $($items[i]);
             if ($i.data('rss') == feed.rss) {
                 // update unread counter
@@ -353,7 +370,6 @@ WEBR.Display = (function() {
             $('.webr-feeditem').removeClass('webr-feeditem-selected');
             $(this).parent().addClass('webr-feeditem-selected');
             var feed = db.findFeed($(this).data('rss'));
-            WEBR.Display.renderArticleControls(feed);
             WEBR.Display.renderArticleList(feed);
             WEBR.Display.renderArticle(null, null);
         });
@@ -373,6 +389,10 @@ WEBR.Display = (function() {
         $('#webr-ct-add').click(function () {
             WEBR.Dialog.show('addfeed');
         });
+        $('#webr-ct-suggest').click(function () {
+            WEBR.Dialog.refreshSuggestFeedSelector();
+            WEBR.Dialog.show('suggest');
+        })
         $('#webr-ct-edit').click(function () {
             WEBR.Dialog.refreshEditFeedSelector();
             WEBR.Dialog.show('editfeed');
@@ -400,7 +420,21 @@ WEBR.Display = (function() {
             }
             db.addFeed(name, rss, $('#webr-ovd-addfeed-append').val(),
                       $('#webr-ovd-addfeed-sel').val(), $('#webr-ovd-addfeed-remove').val());
+            WEBR.Display.renderFeedList();
+            
             WEBR.Dialog.hide();
+            $('#webr-ovd-addfeed-name').val('');
+            $('#webr-ovd-addfeed-rss').val('');
+            $('#webr-ovd-addfeed-append').val('');
+            $('#webr-ovd-addfeed-sel').val('');
+            $('#webr-ovd-addfeed-remove').val('');
+        });
+        $('#webr-ovd-suggest-submit').click(function () {
+            var feed = WEBR.Dialog.getSuggestFeedSelectedFeed();
+            if (db.addFeed(feed.name, feed.rss, feed.append, feed.sel, feed.remove)) {
+                WEBR.Display.renderFeedList();
+                WEBR.Dialog.hide();
+            }
         });
         $('#webr-ovd-editfeed-submit').click(function () {
             var feed = WEBR.Dialog.getEditFeedSelectedFeed();
@@ -422,8 +456,17 @@ WEBR.Display = (function() {
                 WEBR.Notify.show('Please select a feed.', 1500);
             }
         });
-        $('#webr-ovd-editfeed-remove').click(function () {
-            // TODO - REMOVE FEED
+        $('#webr-ovd-editfeed-rm').click(function () {
+            var feed = WEBR.Dialog.getEditFeedSelectedFeed();
+            if (db.removeFeed(feed)) {
+                WEBR.Notify.show('Feed deleted.', 1500);
+                if (WEBR.Display.getDisplayedFeed().rss == feed.rss) {
+                    WEBR.Display.renderArticle(null, null);
+                    WEBR.Display.renderArticleList(null);
+                }
+                WEBR.Display.renderFeedList();
+                WEBR.Dialog.hide();
+            }
         });
         $('#webr-ovd-editfeed-select').change(function () {
             WEBR.Dialog.refreshEditFeedData();
@@ -438,7 +481,7 @@ WEBR.Display = (function() {
         $('#webr-ovd-editfeed-down').click(function () {
             var feed = WEBR.Dialog.getEditFeedSelectedFeed(),
                 ind = db.getFeedIndex(feed);
-            db.swapFeedsByIndex(ind, ind++);
+            db.swapFeedsByIndex(ind, ind + 1);
             WEBR.Dialog.refreshEditFeedSelector();
             WEBR.Display.renderFeedList();
         });
@@ -450,7 +493,7 @@ WEBR.Display = (function() {
         $('.webr-sidebar').css({ width: sidebarWid });
         $('.webr-mainpage').css({ width: wid - sidebarWid - 2 - 4, left: sidebarWid + 2 });
         $('.webr-articlelist').css({ width: wid - sidebarWid - 2 - 5 });
-        $('.webr-maintext').css({ height: $('.webr-maincontentarea').height() - 40 });
+        $('.webr-maintext').css({ height: $('.webr-maincontentarea').height() - 40 - 4 });
     }
     
     db.loadData(WEBR, nwgui, function () {

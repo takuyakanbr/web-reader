@@ -21,6 +21,7 @@
             </div>
             <div class="webr-sidebar-controls">
                 <div title="Add Feed" class="ctbutton fa fa-plus-circle" id="webr-ct-add"></div>
+                <div title="Suggested Feeds" class="ctbutton fa fa-lightbulb-o" id="webr-ct-suggest"></div>
                 <div title="Edit Feeds" class="ctbutton fa fa-edit" id="webr-ct-edit"></div>
                 <div title="Refresh" class="ctbutton fa fa-refresh" id="webr-ct-refresh"></div>
             </div>
@@ -77,9 +78,18 @@
                         <tr><td><label class="hint" for="webr-ovd-editfeed-append" title="Text to append to article link before fetching it.">URL Append</label></td><td><input type="text" id="webr-ovd-editfeed-append"/></td></tr>
                         <tr><td><label class="hint" for="webr-ovd-editfeed-sel" title="CSS rules for elements to fetch from site, separated by '|'.">Selector</label></td><td><input type="text" id="webr-ovd-editfeed-sel"/></td></tr>
                         <tr><td><label class="hint" for="webr-ovd-editfeed-remove" title="CSS rules for elements to be removed, separated by '|'.">Remove Matches</label></td><td><input type="text" id="webr-ovd-editfeed-remove"/></td></tr>
-                        <tr><td></td><td><button id="webr-ovd-editfeed-submit">Edit</button> &nbsp;<button id="webr-ovd-editfeed-remove">Remove</button></td></tr>
+                        <tr><td></td><td><button id="webr-ovd-editfeed-submit">Edit</button> &nbsp;<button id="webr-ovd-editfeed-rm">Remove</button></td></tr>
                         </tbody></table>
                     </td></tr></tbody></table>
+                </div>
+            </div>
+            
+            <div class="webr-ovd" id="webr-ovd-suggest">
+                <div class="webr-ovd-inner">
+                    <div class="webr-ovdtitle">Feed Suggestions</div>
+                    <select id="webr-ovd-suggest-select" size="10"></select>
+                    <br/>
+                    <button id="webr-ovd-suggest-submit">Add Feed</button>
                 </div>
             </div>
             

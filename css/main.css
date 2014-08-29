@@ -83,7 +83,7 @@ button:focus, .button:focus { box-shadow: 0 0 5px rgba(0, 32, 88, 0.8); outline:
 .webr-articleitem-title { width: 50%; }
 .webr-articleitem-date { width: 25%; }
 
-.webr-overlay { display: none; position: fixed; top: 0; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.4); z-index: 10000; }
+.webr-overlay { display: none; position: absolute; top: 0; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.4); z-index: 10000; }
 .webr-ovd-container { position: relative; width: 100%; height: 100%; }
 .webr-ovd { display: table; z-index: 10010; padding: 10px; background: white; border-radius: 5px; width: 360px; height: 300px; text-align: center; vertical-align: middle; position: absolute; top: 50%; left: 50%; margin: -150px 0 0 -180px; }
 .webr-ovd-inner {  display: table-cell; vertical-align: middle; text-align: center; }
@@ -96,5 +96,6 @@ button:focus, .button:focus { box-shadow: 0 0 5px rgba(0, 32, 88, 0.8); outline:
 #webr-ovd-editfeed-select { margin-right: 15px; }
 #webr-ovd-editfeed-outertable { width: 460px; }
 #webr-ovd-editfeed-innertable { width: 180px; }
+#webr-ovd-suggest-select { width: 250px; }
 
 .webr-notification-box { max-width: 50%; position: absolute; z-index: 20000; display: none; -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); border: 1px solid #3888e2; top: 58px; left: 250px; background-color: white; color: #3888e2; padding: 6px 14px; }

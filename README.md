@@ -15,7 +15,7 @@ Node-Webkit based RSS reader.
 
 1. Make sure you have [Node.js](http://www.nodejs.org/) installed.
 2. Clone the repository.
-3. Use `npm install` in the `node_modules` directory.
+3. Use `npm install` in the root directory of the repository.
 4. Download [Node-Webkit](https://github.com/rogerwang/node-webkit#downloads) and place it in the root folder of the repository.
 5. Run the application using `nw.exe` from node-webkit.
 
