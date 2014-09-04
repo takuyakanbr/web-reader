@@ -23,6 +23,7 @@
                 <div title="Add Feed" class="ctbutton fa fa-plus-circle" id="webr-ct-add"></div>
                 <div title="Suggested Feeds" class="ctbutton fa fa-lightbulb-o" id="webr-ct-suggest"></div>
                 <div title="Edit Feeds" class="ctbutton fa fa-edit" id="webr-ct-edit"></div>
+                <div title="Settings" class="ctbutton fa fa-gear" id="webr-ct-settings"></div>
                 <div title="Refresh" class="ctbutton fa fa-refresh" id="webr-ct-refresh"></div>
             </div>
         </div>
@@ -45,62 +46,74 @@
             </tbody></table></div>
         </div>
         
-    </div>
-    
-    <!-- POPUP DIALOGS -->
-    <div class="webr-overlay">
-        <div class="webr-ovd-container">
-            
-            <div class="webr-ovd" id="webr-ovd-addfeed">
-                <div class="webr-ovd-inner">
-                    <div class="webr-ovdtitle">Add New Feed</div>
-                    <table id="webr-ovd-addfeed-table"><tbody>
-                    <tr><td><label class="hint required" for="webr-ovd-addfeed-name" title="Display name of this feed.">Name</label></td><td><input type="text" id="webr-ovd-addfeed-name"/></td></tr>
-                    <tr><td><label class="hint required" for="webr-ovd-addfeed-rss" title="URL of the RSS feed.">RSS URL</label></td><td><input type="text" id="webr-ovd-addfeed-rss"/></td></tr>
-                    <tr><td><label class="hint" for="webr-ovd-addfeed-append" title="Text to append to article link before fetching it.">URL Append</label></td><td><input type="text" id="webr-ovd-addfeed-append"/></td></tr>
-                    <tr><td><label class="hint" for="webr-ovd-addfeed-sel" title="CSS rules for elements to fetch from site, separated by '|'.">Selector</label></td><td><input type="text" id="webr-ovd-addfeed-sel"/></td></tr>
-                    <tr><td><label class="hint" for="webr-ovd-addfeed-remove" title="CSS rules for elements to be removed, separated by '|'.">Remove Matches</label></td><td><input type="text" id="webr-ovd-addfeed-remove"/></td></tr>
-                    <tr><td></td><td><button id="webr-ovd-addfeed-submit">Add Feed</button></td></tr>
-                    </tbody></table>
-                </div>
-            </div>
-            
-            <div class="webr-ovd" id="webr-ovd-editfeed">
-                <div class="webr-ovd-inner">
-                    <div class="webr-ovdtitle">Edit Feeds</div>
-                    <table id="webr-ovd-editfeed-outertable"><tbody><tr><td style="width: 150px"> <!-- selector -->
-                        <select id="webr-ovd-editfeed-select" size="10"></select>
-                        <br/><button id="webr-ovd-editfeed-up">&uarr;</button> &nbsp;<button id="webr-ovd-editfeed-down">&darr;</button>
-                    </td><td> <!-- input boxes -->
-                        <table id="webr-ovd-editfeed-innertable"><tbody>
-                        <tr><td><label class="hint required" for="webr-ovd-editfeed-name" title="Display name of this feed.">Name</label></td><td><input type="text" id="webr-ovd-editfeed-name"/></td></tr>
-                        <tr><td><label class="hint" for="webr-ovd-editfeed-rss" title="URL of the RSS feed.">URL</label></td><td><input type="text" id="webr-ovd-editfeed-rss" readonly/></td></tr>
-                        <tr><td><label class="hint" for="webr-ovd-editfeed-append" title="Text to append to article link before fetching it.">URL Append</label></td><td><input type="text" id="webr-ovd-editfeed-append"/></td></tr>
-                        <tr><td><label class="hint" for="webr-ovd-editfeed-sel" title="CSS rules for elements to fetch from site, separated by '|'.">Selector</label></td><td><input type="text" id="webr-ovd-editfeed-sel"/></td></tr>
-                        <tr><td><label class="hint" for="webr-ovd-editfeed-remove" title="CSS rules for elements to be removed, separated by '|'.">Remove Matches</label></td><td><input type="text" id="webr-ovd-editfeed-remove"/></td></tr>
-                        <tr><td></td><td><button id="webr-ovd-editfeed-submit">Edit</button> &nbsp;<button id="webr-ovd-editfeed-rm">Remove</button></td></tr>
+        <!-- POPUP DIALOGS -->
+        <div class="webr-overlay">
+            <div class="webr-ovd-container">
+
+                <div class="webr-ovd" id="webr-ovd-addfeed">
+                    <div class="webr-ovd-inner">
+                        <div class="webr-ovdtitle">Add New Feed</div>
+                        <table id="webr-ovd-addfeed-table"><tbody>
+                        <tr><td><label class="hint required" for="webr-ovd-addfeed-name" title="Display name of this feed.">Name</label></td><td><input type="text" id="webr-ovd-addfeed-name"/></td></tr>
+                        <tr><td><label class="hint required" for="webr-ovd-addfeed-rss" title="URL of the RSS feed.">RSS URL</label></td><td><input type="text" id="webr-ovd-addfeed-rss"/></td></tr>
+                        <tr><td><label class="hint" for="webr-ovd-addfeed-append" title="Text to append to article link before fetching it.">URL Append</label></td><td><input type="text" id="webr-ovd-addfeed-append"/></td></tr>
+                        <tr><td><label class="hint" for="webr-ovd-addfeed-sel" title="CSS rules for elements to fetch from site, separated by '|'.">Selector</label></td><td><input type="text" id="webr-ovd-addfeed-sel"/></td></tr>
+                        <tr><td><label class="hint" for="webr-ovd-addfeed-remove" title="CSS rules for elements to be removed, separated by '|'.">Remove Matches</label></td><td><input type="text" id="webr-ovd-addfeed-remove"/></td></tr>
+                        <tr><td></td><td><button id="webr-ovd-addfeed-submit">Add Feed</button></td></tr>
                         </tbody></table>
-                    </td></tr></tbody></table>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="webr-ovd" id="webr-ovd-suggest">
-                <div class="webr-ovd-inner">
-                    <div class="webr-ovdtitle">Feed Suggestions</div>
-                    <select id="webr-ovd-suggest-select" size="10"></select>
-                    <br/>
-                    <button id="webr-ovd-suggest-submit">Add Feed</button>
+
+                <div class="webr-ovd" id="webr-ovd-editfeed">
+                    <div class="webr-ovd-inner">
+                        <div class="webr-ovdtitle">Edit Feeds</div>
+                        <table id="webr-ovd-editfeed-outertable"><tbody><tr><td style="width: 150px"> <!-- selector -->
+                            <select id="webr-ovd-editfeed-select" size="10"></select>
+                            <br/><button id="webr-ovd-editfeed-up">&uarr;</button> &nbsp;<button id="webr-ovd-editfeed-down">&darr;</button>
+                        </td><td> <!-- input boxes -->
+                            <table id="webr-ovd-editfeed-innertable"><tbody>
+                            <tr><td><label class="hint required" for="webr-ovd-editfeed-name" title="Display name of this feed.">Name</label></td><td><input type="text" id="webr-ovd-editfeed-name"/></td></tr>
+                            <tr><td><label class="hint" for="webr-ovd-editfeed-rss" title="URL of the RSS feed.">URL</label></td><td><input type="text" id="webr-ovd-editfeed-rss" readonly/></td></tr>
+                            <tr><td><label class="hint" for="webr-ovd-editfeed-append" title="Text to append to article link before fetching it.">URL Append</label></td><td><input type="text" id="webr-ovd-editfeed-append"/></td></tr>
+                            <tr><td><label class="hint" for="webr-ovd-editfeed-sel" title="CSS rules for elements to fetch from site, separated by '|'.">Selector</label></td><td><input type="text" id="webr-ovd-editfeed-sel"/></td></tr>
+                            <tr><td><label class="hint" for="webr-ovd-editfeed-remove" title="CSS rules for elements to be removed, separated by '|'.">Remove Matches</label></td><td><input type="text" id="webr-ovd-editfeed-remove"/></td></tr>
+                            <tr><td></td><td><button id="webr-ovd-editfeed-submit">Edit</button> &nbsp;<button id="webr-ovd-editfeed-rm">Remove</button></td></tr>
+                            </tbody></table>
+                        </td></tr></tbody></table>
+                    </div>
                 </div>
+
+                <div class="webr-ovd" id="webr-ovd-suggest">
+                    <div class="webr-ovd-inner">
+                        <div class="webr-ovdtitle">Feed Suggestions</div>
+                        <select id="webr-ovd-suggest-select" size="10"></select>
+                        <br/>
+                        <button id="webr-ovd-suggest-submit">Add Feed</button>
+                    </div>
+                </div>
+
+                <div class="webr-ovd" id="webr-ovd-settings">
+                    <div class="webr-ovd-inner">
+                        <div class="webr-ovdtitle">Settings</div>
+                        <table id="webr-ovd-settings-table"><tbody>
+                        <tr><td><label class="hint" for="webr-ovd-settings-fontsize" title="Font size for displayed article">Font Size</label></td><td><input type="number" id="webr-ovd-settings-fontsize"/></td></tr>
+                        <tr><td><label class="hint" for="webr-ovd-settings-updaterate" title="Frequency of automatic updating of feeds">Update Rate</label></td><td><input type="number" id="webr-ovd-settings-updaterate"/></td></tr>
+                        <tr><td><label class="hint" for="webr-ovd-settings-remove" title="Amount of time to keep posts, after which they'll be removed">Keep Posts</label></td><td><input type="number" id="webr-ovd-settings-remove"/></td></tr>
+                        <tr><td></td><td><button id="webr-ovd-settings-submit">Save</button></td></tr>
+                        </tbody></table>
+                    </div>
+                </div>
+                
             </div>
-            
         </div>
-    </div>
-    
-    </div>
-    
-    <!-- NOTIFICATIONS -->
-    <div class="webr-notification-box">
-        <div class="webr-notification"></div>
+
+        </div>
+
+        <!-- NOTIFICATIONS -->
+        <div class="webr-notification-box">
+            <div class="webr-notification"></div>
+        </div>
+        
     </div>
 
     <script src="../js/main.js"></script>

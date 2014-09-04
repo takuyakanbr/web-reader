@@ -75,6 +75,13 @@ WEBR.Dialog = (function () {
         }
     }
     
+    function refreshSettingsDialog() {
+        var sett = db.settings;
+        $('#webr-ovd-settings-fontsize').val(sett.articleFontSize);
+        $('#webr-ovd-settings-updaterate').val(sett.updateRate);
+        $('#webr-ovd-settings-remove').val(sett.removeOlderThan);
+    }
+    
     return {
         show: function (dialogName) {
             if (isActive) {
@@ -90,7 +97,8 @@ WEBR.Dialog = (function () {
         getSuggestFeedSelectedFeed: getSuggestFeedSelectedFeed,
         refreshEditFeedSelector: refreshEditFeedSelector,
         refreshSuggestFeedSelector: refreshSuggestFeedSelector,
-        refreshEditFeedData: refreshEditFeedData
+        refreshEditFeedData: refreshEditFeedData,
+        refreshSettingsDialog: refreshSettingsDialog
     };
 }());
 WEBR.Notify = (function () {
@@ -133,7 +141,7 @@ WEBR.Notify = (function () {
         resize: resize
     };
 }());
-WEBR.Display = (function() {
+WEBR.Display = (function () {
     var db = WEBR.db,
         util = WEBR.util,
         moment = WEBR.moment;
@@ -223,6 +231,7 @@ WEBR.Display = (function() {
         } else {
             $('<tr class="webr-articleitem"><td>No articles found.</td></tr>').appendTo($articlelist);
         }
+        $('.webr-articlelist').scrollTop(0);
     }
     
     // refresh the article list if feed matches displayedFeed
@@ -316,6 +325,15 @@ WEBR.Display = (function() {
         updateUnreadCount: updateUnreadCount
     };
 }());
+WEBR.Settings = (function () {
+    var db = WEBR.db;
+    
+    return {
+        apply: function () {
+            $('.webr-maintext').css('font-size', db.settings.articleFontSize + 'px');
+        }
+    };
+}());
 
 
 (function () {
@@ -362,6 +380,7 @@ WEBR.Display = (function() {
         $('#webr-topbar-min').click(function () {
             guiWindow.minimize();
         });
+        WEBR.Settings.apply();
         
         
         // clicked feed list item
@@ -384,7 +403,15 @@ WEBR.Display = (function() {
             $(this).removeClass('webr-articleitem-unread');
             WEBR.Display.renderArticle(db.findFeed(rss), link);
         });
+        // clicked links within article
+        $('.webr-maintext').on('click', 'a', function (e) {
+            e.preventDefault();
+            nwgui.Window.open($(this).attr('href'), { width: 1200, height: 750, window: { frame: true, toolbar: true }, focus: true });
+            return false;
+        });
         
+        
+        // ----- sidebar and titlebar controls -----
         
         $('#webr-ct-add').click(function () {
             WEBR.Dialog.show('addfeed');
@@ -396,6 +423,10 @@ WEBR.Display = (function() {
         $('#webr-ct-edit').click(function () {
             WEBR.Dialog.refreshEditFeedSelector();
             WEBR.Dialog.show('editfeed');
+        });
+        $('#webr-ct-settings').click(function () {
+            WEBR.Dialog.refreshSettingsDialog();
+            WEBR.Dialog.show('settings');
         });
         $('#webr-ct-refresh').click(function () {
             db.pullAllFeeds(true);
@@ -411,6 +442,13 @@ WEBR.Display = (function() {
         });
         
         
+        // ----- dialogboxes -----
+        
+        $('.webr-ovd-container').click(function () {
+            WEBR.Dialog.hide();
+        }).children().click(function (e) {
+            return false;
+        });
         $('#webr-ovd-addfeed-submit').click(function () {
             var name = $('#webr-ovd-addfeed-name').val(),
                 rss = $('#webr-ovd-addfeed-rss').val();
@@ -484,6 +522,14 @@ WEBR.Display = (function() {
             db.swapFeedsByIndex(ind, ind + 1);
             WEBR.Dialog.refreshEditFeedSelector();
             WEBR.Display.renderFeedList();
+        });
+        $('#webr-ovd-settings-submit').click(function () {
+            db.settings.articleFontSize = $('#webr-ovd-settings-fontsize').val();
+            db.settings.updateRate = $('#webr-ovd-settings-updaterate').val();
+            db.settings.removeOlderThan = $('#webr-ovd-settings-remove').val();
+            WEBR.Settings.apply();
+            db.saveSettings();
+            WEBR.Dialog.hide();
         });
     }
     

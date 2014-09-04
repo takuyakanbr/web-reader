@@ -20,11 +20,11 @@ a, input, textarea, button, select, .button, .ctbutton, .hdbutton, tr, .webr-fee
 a { color: #0045ff }
 a:hover { color: #0e0055; }
 input { padding: 5px; }
-input[type='text'], input[type='password'], input[type='email'], select {
+input[type='text'], input[type='password'], input[type='email'], input[type='number'], select {
     color: #222; border: 1px solid #bbb; background-color: white; }
-input[type='text']:hover, input[type='password']:hover, input[type='email']:hover, select:hover {
+input[type='text']:hover, input[type='password']:hover, input[type='email']:hover, input[type='number']:hover, select:hover {
     color: #000; border: 1px solid #888; background-color: white; }
-input[type='text']:focus, input[type='password']:focus, input[type='email']:focus, select:focus {
+input[type='text']:focus, input[type='password']:focus, input[type='email']:focus, input[type='number']:focus, select:focus {
     color: #000; border-color: #0045ff; background-color: #f6f6f6; outline: none; }
 button, .button { outline: 0 none; border: none; margin: 6px 0 3px;
     padding: 6px 18px; border-radius: 2px; text-align: center; cursor: pointer; text-transform: uppercase;
@@ -63,7 +63,7 @@ button:focus, .button:focus { box-shadow: 0 0 5px rgba(0, 32, 88, 0.8); outline:
 .webr-head-buttons div { margin-right: 10px; cursor: pointer; }
 .webr-head-buttons div:hover { color: #004476; }
 
-.webr-maintext { padding: 15px 6px; overflow-y: auto; height: 100%; }
+.webr-maintext { font-size: 15px; padding: 15px 6px; overflow-y: auto; height: 100%; }
 .webr-maintextitem-header { border-top: 2px solid #07c; border-bottom: 2px solid #07c; margin: 5px 0; padding: 5px; }
 .webr-maintextitem-title { float: left; font-size: 16px; font-weight: bold; }
 .webr-maintextitem-date { float: right; margin-top: 2px; }
@@ -89,8 +89,8 @@ button:focus, .button:focus { box-shadow: 0 0 5px rgba(0, 32, 88, 0.8); outline:
 .webr-ovd-inner {  display: table-cell; vertical-align: middle; text-align: center; }
 .webr-ovd-inner td { text-align: left }
 .webr-ovdtitle { font-size: 120%; font-weight: bold; margin-bottom: 8px; }
-#webr-ovd-addfeed input[type='text'] { width: 200px; }
-#webr-ovd-addfeed table { width: 340px; }
+#webr-ovd-addfeed input[type='text'], #webr-ovd-settings input[type='number'] { width: 200px; }
+#webr-ovd-addfeed table, #webr-ovd-settings table { width: 340px; }
 #webr-ovd-editfeed { width: 480px; margin: -150px 0 0 -240px; }
 #webr-ovd-editfeed input[type='text'], #webr-ovd-editfeed-select { width: 175px; }
 #webr-ovd-editfeed-select { margin-right: 15px; }
