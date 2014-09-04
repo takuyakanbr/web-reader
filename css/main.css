@@ -63,10 +63,10 @@ button:focus, .button:focus { box-shadow: 0 0 5px rgba(0, 32, 88, 0.8); outline:
 .webr-head-buttons div { margin-right: 10px; cursor: pointer; }
 .webr-head-buttons div:hover { color: #004476; }
 
-.webr-maintext { font-size: 15px; padding: 15px 6px; overflow-y: auto; height: 100%; }
+.webr-maintext { font-size: 15px; padding: 15px 6px; overflow-y: auto; height: 100%; font-family: 'Lato', sans-serif; }
 .webr-maintextitem-header { border-top: 2px solid #07c; border-bottom: 2px solid #07c; margin: 5px 0; padding: 5px; }
 .webr-maintextitem-title { float: left; font-size: 16px; font-weight: bold; }
-.webr-maintextitem-date { float: right; margin-top: 2px; }
+.webr-maintextitem-date { float: right; font-size: 14px; margin-top: 2px; }
 .webr-maintextitem-body { padding: 2px 7px 4px; }
 .webr-paragraph { margin: 6px 0; line-height: 1.4; }
 .webr-paragraph img { max-width: 100%; }
@@ -89,7 +89,7 @@ button:focus, .button:focus { box-shadow: 0 0 5px rgba(0, 32, 88, 0.8); outline:
 .webr-ovd-inner {  display: table-cell; vertical-align: middle; text-align: center; }
 .webr-ovd-inner td { text-align: left }
 .webr-ovdtitle { font-size: 120%; font-weight: bold; margin-bottom: 8px; }
-#webr-ovd-addfeed input[type='text'], #webr-ovd-settings input[type='number'] { width: 200px; }
+#webr-ovd-addfeed input[type='text'], #webr-ovd-settings input[type='text'], #webr-ovd-settings input[type='number'] { width: 200px; }
 #webr-ovd-addfeed table, #webr-ovd-settings table { width: 340px; }
 #webr-ovd-editfeed { width: 480px; margin: -150px 0 0 -240px; }
 #webr-ovd-editfeed input[type='text'], #webr-ovd-editfeed-select { width: 175px; }

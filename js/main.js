@@ -77,7 +77,9 @@ WEBR.Dialog = (function () {
     
     function refreshSettingsDialog() {
         var sett = db.settings;
+        $('#webr-ovd-settings-font').val(sett.articleFont);
         $('#webr-ovd-settings-fontsize').val(sett.articleFontSize);
+        $('#webr-ovd-settings-lineheight').val(sett.lineHeight);
         $('#webr-ovd-settings-updaterate').val(sett.updateRate);
         $('#webr-ovd-settings-remove').val(sett.removeOlderThan);
     }
@@ -331,6 +333,9 @@ WEBR.Settings = (function () {
     return {
         apply: function () {
             $('.webr-maintext').css('font-size', db.settings.articleFontSize + 'px');
+            $('.webr-maintext').css('font-family', '\'' + db.settings.articleFont + '\', sans-serif');
+            jss.remove('.webr-paragraph');
+            jss.set('.webr-paragraph', { 'line-height': db.settings.lineHeight + '' });
         }
     };
 }());
@@ -524,7 +529,9 @@ WEBR.Settings = (function () {
             WEBR.Display.renderFeedList();
         });
         $('#webr-ovd-settings-submit').click(function () {
+            db.settings.articleFont = $('#webr-ovd-settings-font').val();
             db.settings.articleFontSize = $('#webr-ovd-settings-fontsize').val();
+            db.settings.lineHeight = $('#webr-ovd-settings-lineheight').val();
             db.settings.updateRate = $('#webr-ovd-settings-updaterate').val();
             db.settings.removeOlderThan = $('#webr-ovd-settings-remove').val();
             WEBR.Settings.apply();
