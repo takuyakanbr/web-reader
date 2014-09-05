@@ -49,6 +49,7 @@ button:focus, .button:focus { box-shadow: 0 0 5px rgba(0, 32, 88, 0.8); outline:
 .webr-sidebar { position: absolute; top: 0; left: 0; bottom: 0; padding: 12px 6px; }
 .webr-sidebar-title { font-weight: bold; margin-bottom: 7px; padding: 5px 0 0 10px; }
 .webr-feeditem { position: relative; padding: 4px 4px 4px 10px; border-radius: 4px; }
+.webr-feeditem-saved { font-weight: bold; }
 .webr-feeditem a { display: inline-block; width: 90%; }
 .webr-feeditem-unread { position: absolute; top: 0; right: 0; border-radius: 2px; padding: 2px; font-weight: bold; z-index: 3;  margin: 1px 5px 0 }
 .webr-feeditem:hover { background-color: #f4f4f4; }

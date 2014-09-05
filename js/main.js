@@ -153,12 +153,15 @@ WEBR.Display = (function () {
         $headtitle = $('.webr-head-title'),
         $headbuttons = $('.webr-head-buttons'),
         $headbuttonsarticle = $('.webr-head-buttons-article'),
+        $starbtn = $('#webr-hdb-star'),
+        $unstarbtn = $('#webr-hdb-unstar'),
         displayedFeed = null,
         displayedPost = null;
     
     // renders an article given feed ID and article link
     function renderArticle(feed, link) {
         var $maintext = $('.webr-maintext');
+        $headbuttonsarticle.hide();
         
         if (!feed || !link) {
             displayedPost = null;
@@ -179,6 +182,13 @@ WEBR.Display = (function () {
             $maintext.html('Article not found.');
             return;
         }
+        
+        // for saved articles
+        if (feed.rss == db.savedFeed.rss) {
+            _doRenderArticle(post, post.article);
+            return;
+        }
+        
         if (!post.read) {
             post.read = new Date();
             db.saveFeedContent(feed.rss);
@@ -200,8 +210,15 @@ WEBR.Display = (function () {
     
     function _doRenderArticle(post, article) {
         var $maintext = $('.webr-maintext');
-        var html = '<div class="webr-maintextitem"><div class="webr-maintextitem-header"><div class="webr-maintextitem-title">' + post.title + '</div><div class="webr-maintextitem-date">' + moment(post.date).format('DD MMM YYYY hh:mm:ss a') + '</div><div class="webr-clearfix"></div></div><div class="webr-maintextitem-body">' + article + '</div></div>';
+        var html = '<div class="webr-maintextitem"><div class="webr-maintextitem-header"><div class="webr-maintextitem-title">' + post.title + ' </div> <div class="webr-maintextitem-date">' + moment(post.date).format('DD MMM YYYY hh:mm:ss a') + '</div><div class="webr-clearfix"></div></div><div class="webr-maintextitem-body">' + article + '</div></div>';
         $headbuttonsarticle.show();
+        if (db.isArticleSaved(post)) {
+            $starbtn.hide();
+            $unstarbtn.show();
+        } else {
+            $starbtn.show();
+            $unstarbtn.hide();
+        }
         $maintext.html(html);
     }
     
@@ -319,6 +336,7 @@ WEBR.Display = (function () {
     return {
         getDisplayedFeed: function() { return displayedFeed },
         getDisplayedPost: function() { return displayedPost },
+        getDisplayedArticle: function () { return $('.webr-maintextitem-body').html() },
         renderArticle: renderArticle,
         renderArticleList: renderArticleList,
         refreshArticleList: refreshArticleList,
@@ -397,6 +415,16 @@ WEBR.Settings = (function () {
             WEBR.Display.renderArticleList(feed);
             WEBR.Display.renderArticle(null, null);
         });
+        // clicked saved feeds
+        $('.webr-feeditem-saved').click(function (e) {
+            e.preventDefault();
+            $('.webr-feeditem').removeClass('webr-feeditem-selected');
+            $(this).addClass('webr-feeditem-selected');
+            var feed = db.savedFeed;
+            WEBR.Display.renderArticleList(feed);
+            WEBR.Display.renderArticle(null, null);
+            return false;
+        });
         
         // clicked article list item
         $('.webr-articlelisttable').on('click', '.webr-articleitem', function (e) {
@@ -411,7 +439,7 @@ WEBR.Settings = (function () {
         // clicked links within article
         $('.webr-maintext').on('click', 'a', function (e) {
             e.preventDefault();
-            nwgui.Window.open($(this).attr('href'), { width: 1200, height: 750, window: { frame: true, toolbar: true }, focus: true });
+            nwgui.Window.open($(this).attr('href'), { width: 1200, height: 750, focus: true });
             return false;
         });
         
@@ -439,11 +467,34 @@ WEBR.Settings = (function () {
         $('#webr-hdb-read').click(function () {
             var feed = WEBR.Display.getDisplayedFeed();
             var updated = db.markAllAsRead(feed);
-            WEBR.Notify.show(updated + ' articles marked as read.', 1500);
+            WEBR.Notify.show(updated + ' article' + ((updated == 1) ? '' : 's') + ' marked as read.', 1500);
             WEBR.Display.updateUnreadCount(feed);
         });
         $('#webr-hdb-star').click(function () {
-            // TODO - SAVE ARTICLE
+            var post = WEBR.Display.getDisplayedPost(),
+                article = WEBR.Display.getDisplayedArticle();
+            if (db.saveArticle(post, article)) {
+                $('#webr-hdb-star').hide();
+                $('#webr-hdb-unstar').show();
+                db.saveFeedContent('saved');
+                WEBR.Display.refreshArticleList(db.savedFeed);
+                WEBR.Notify.show('Article saved.', 1400);
+            }
+        });
+        $('#webr-hdb-unstar').click(function () {
+            var post = WEBR.Display.getDisplayedPost();
+            if (db.unsaveArticle(post)) {
+                $('#webr-hdb-star').show();
+                $('#webr-hdb-unstar').hide();
+                db.saveFeedContent('saved');
+                WEBR.Display.refreshArticleList(db.savedFeed);
+                WEBR.Notify.show('Article unsaved.', 1400);
+            }
+        });
+        $('#webr-hdb-openlink').click(function () {
+            var post = WEBR.Display.getDisplayedPost();
+            if (!post) return;
+            nwgui.Window.open(post.link, { width: 1200, height: 750, focus: true });
         });
         
         
@@ -451,7 +502,8 @@ WEBR.Settings = (function () {
         
         $('.webr-ovd-container').click(function () {
             WEBR.Dialog.hide();
-        }).children().click(function (e) {
+        })
+        .children().click(function (e) {
             return false;
         });
         $('#webr-ovd-addfeed-submit').click(function () {
@@ -529,14 +581,18 @@ WEBR.Settings = (function () {
             WEBR.Display.renderFeedList();
         });
         $('#webr-ovd-settings-submit').click(function () {
-            db.settings.articleFont = $('#webr-ovd-settings-font').val();
-            db.settings.articleFontSize = $('#webr-ovd-settings-fontsize').val();
-            db.settings.lineHeight = $('#webr-ovd-settings-lineheight').val();
-            db.settings.updateRate = $('#webr-ovd-settings-updaterate').val();
-            db.settings.removeOlderThan = $('#webr-ovd-settings-remove').val();
-            WEBR.Settings.apply();
-            db.saveSettings();
-            WEBR.Dialog.hide();
+            try {
+                db.settings.articleFont = $('#webr-ovd-settings-font').val();
+                db.settings.articleFontSize = parseInt($('#webr-ovd-settings-fontsize').val());
+                db.settings.lineHeight = parseFloat($('#webr-ovd-settings-lineheight').val());
+                db.settings.updateRate = parseInt($('#webr-ovd-settings-updaterate').val());
+                db.settings.removeOlderThan = parseInt($('#webr-ovd-settings-remove').val());
+                WEBR.Settings.apply();
+                db.saveSettings();
+                WEBR.Dialog.hide();
+            } catch (e) {
+                WEBR.Notify.show('Error saving settings.', 1500);
+            }
         });
     }
     
