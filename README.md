@@ -2,13 +2,15 @@
 
 Node-Webkit based RSS reader.
 
-![Screenshot](https://s-takuya.rhcloud.com/f/7yrLznvWec/web_reader_ss.PNG)
+![Screenshot](https://s-takuya.rhcloud.com/f/5kWMcbfm4T/web_reader_ss.PNG)
 
 ## Features
 - Manage your RSS feeds.
 - Pull feeds automatically every hour (there is a manual refresh button).
 - Scrape articles off webpages directly and automatically.
 - Stores whether you have read each article.
+- Save articles for future reference.
+- Customize font, font size, and line height.
 - All data stored locally (in `%LOCALAPPDATA%\web-reader`).
 
 ## Running
