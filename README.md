@@ -21,6 +21,12 @@ Node-Webkit based RSS reader.
 4. Download [Node-Webkit](https://github.com/rogerwang/node-webkit#downloads) and place it in the root folder of the repository.
 5. Run the application using `nw.exe` from node-webkit.
 
+## Download
+
+Alternatively, you can download one of these files containing a pre-built binary.
+- Windows - [web_reader.exe](https://dl.dropboxusercontent.com/u/15393327/web_reader/web_reader.exe) - 49.2 MB
+- Windows - [web_reader.win.zip](https://dl.dropboxusercontent.com/u/15393327/web_reader/web_reader.win.zip) - 25.7 MB
+
 ## License
 
 (C) Copyright 2014 Daniel Teo

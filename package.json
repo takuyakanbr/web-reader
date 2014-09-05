@@ -1,5 +1,8 @@
 {
   "name": "web-reader",
+  "description": "Node-Webkit based RSS reader.",
+  "author": "Daniel Teo",
+  "homepage": "https://github.com/takuyakanbr/web-reader",
   "main": "./html/index.html",
   "window": {
     "title": "Web Reader",
