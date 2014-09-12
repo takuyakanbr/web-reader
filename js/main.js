@@ -156,10 +156,12 @@ WEBR.Display = (function () {
         $starbtn = $('#webr-hdb-star'),
         $unstarbtn = $('#webr-hdb-unstar'),
         displayedFeed = null,
-        displayedPost = null;
+        displayedPost = null,
+        displayedPostLoaded = false;
     
     // renders an article given feed ID and article link
     function renderArticle(feed, link) {
+        displayedPostLoaded = false;
         var $maintext = $('.webr-maintext');
         $headbuttonsarticle.hide();
         
@@ -197,8 +199,17 @@ WEBR.Display = (function () {
             else feed.read = 1;
             updateUnreadCount(feed);
         }
+        $headbuttonsarticle.show();
+        if (db.isArticleSaved(post)) {
+            $starbtn.hide();
+            $unstarbtn.show();
+        } else {
+            $starbtn.show();
+            $unstarbtn.hide();
+        }
         if (!feed.sel) { // no selector: use post.desc
             _doRenderArticle(post, post.desc);
+            displayedPostLoaded = true;
         } else { // scrape data from link
             util.pullArticle(link, feed.append, feed.sel, feed.remove, function (text) {
                 _doRenderArticle(post, text);
@@ -209,17 +220,12 @@ WEBR.Display = (function () {
     }
     
     function _doRenderArticle(post, article) {
-        var $maintext = $('.webr-maintext');
-        var html = '<div class="webr-maintextitem"><div class="webr-maintextitem-header"><div class="webr-maintextitem-title">' + post.title + ' </div> <div class="webr-maintextitem-date">' + moment(post.date).format('DD MMM YYYY hh:mm:ss a') + '</div><div class="webr-clearfix"></div></div><div class="webr-maintextitem-body">' + article + '</div></div>';
-        $headbuttonsarticle.show();
-        if (db.isArticleSaved(post)) {
-            $starbtn.hide();
-            $unstarbtn.show();
-        } else {
-            $starbtn.show();
-            $unstarbtn.hide();
+        if (displayedPost && displayedPost.link == post.link) {
+            var $maintext = $('.webr-maintext');
+            var html = '<div class="webr-maintextitem"><div class="webr-maintextitem-header"><div class="webr-maintextitem-title">' + post.title + ' </div> <div class="webr-maintextitem-date">' + moment(post.date).format('DD MMM YYYY hh:mm:ss a') + '</div><div class="webr-clearfix"></div></div><div class="webr-maintextitem-body">' + article + '</div></div>';
+            $maintext.html(html);
+            displayedPostLoaded = true;
         }
-        $maintext.html(html);
     }
     
     // resets list of articles
@@ -336,6 +342,7 @@ WEBR.Display = (function () {
     return {
         getDisplayedFeed: function() { return displayedFeed },
         getDisplayedPost: function() { return displayedPost },
+        isDisplayedPostLoaded: function() { return displayedPostLoaded },
         getDisplayedArticle: function () { return $('.webr-maintextitem-body').html() },
         renderArticle: renderArticle,
         renderArticleList: renderArticleList,
@@ -471,6 +478,7 @@ WEBR.Settings = (function () {
             WEBR.Display.updateUnreadCount(feed);
         });
         $('#webr-hdb-star').click(function () {
+            if (!WEBR.Display.isDisplayedPostLoaded()) return;
             var post = WEBR.Display.getDisplayedPost(),
                 article = WEBR.Display.getDisplayedArticle();
             if (db.saveArticle(post, article)) {
@@ -482,6 +490,7 @@ WEBR.Settings = (function () {
             }
         });
         $('#webr-hdb-unstar').click(function () {
+            if (!WEBR.Display.isDisplayedPostLoaded()) return;
             var post = WEBR.Display.getDisplayedPost();
             if (db.unsaveArticle(post)) {
                 $('#webr-hdb-star').show();
