@@ -214,7 +214,7 @@ WEBR.Display = (function () {
             util.pullArticle(link, feed.append, feed.sel, feed.remove, function (text) {
                 _doRenderArticle(post, text);
             }, function (err) {
-                $maintext.html('Error loading article.');
+                $maintext.html('Error loading article: ' + err);
             });
         }
     }
