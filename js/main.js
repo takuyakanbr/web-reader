@@ -377,7 +377,8 @@ WEBR.Settings = (function () {
     
     var wid = window.innerWidth,
         hgt = window.innerHeight,
-        guiWindow = nwgui.Window.get();;
+        resizeTimerId = -1,
+        guiWindow = nwgui.Window.get();
     
     
     function setupHandlers() {
@@ -385,7 +386,8 @@ WEBR.Settings = (function () {
             var width = window.innerWidth,
                 height = window.innerHeight;
             if (width != wid || height != hgt) {
-                setTimeout(doResize, 500);
+                clearTimeout(resizeTimerId);
+                resizeTimerId = setTimeout(doResize, 500);
                 WEBR.Notify.resize();
                 wid = width;
                 hgt = height;
@@ -505,6 +507,11 @@ WEBR.Settings = (function () {
             if (!post) return;
             nwgui.Window.open(post.link, { width: 1200, height: 750, focus: true });
         });
+        $('#webr-hdb-openbrowser').click(function () {
+            var post = WEBR.Display.getDisplayedPost();
+            if (!post) return;
+            nwgui.Shell.openExternal(post.link);
+        });
         
         
         // ----- dialogboxes -----
@@ -606,12 +613,8 @@ WEBR.Settings = (function () {
     }
     
     function doResize() {
-        var sidebarWid = wid * 0.3;
-        if (sidebarWid > 300) sidebarWid = 300;
-        $('.webr-sidebar').css({ width: sidebarWid });
-        $('.webr-mainpage').css({ width: wid - sidebarWid - 2 - 4, left: sidebarWid + 2 });
-        $('.webr-articlelist').css({ width: wid - sidebarWid - 2 - 5 });
-        $('.webr-maintext').css({ height: $('.webr-maincontentarea').height() - 40 - 4 });
+        var win = nwgui.Window.get();
+        db.savePosition(win.x, win.y, win.width, win.height);
     }
     
     db.loadData(WEBR, nwgui, function () {

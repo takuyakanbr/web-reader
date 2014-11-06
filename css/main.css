@@ -40,13 +40,12 @@ button:focus, .button:focus { box-shadow: 0 0 5px rgba(0, 32, 88, 0.8); outline:
 
 .webr-window { height: 100%; width: 100%; position: absolute; border: 2px solid #3c3f41; }
 .webr-topbar { top: 0; left: 0; height: 18px; width: 100%; -webkit-app-region: drag; background-color: #3c3f41; -webkit-font-smoothing: antialiased; cursor: move; z-index: 10; }
-.webr-articlelist { border-bottom: 2px solid #3c3f41; }
 .webr-topbar span { display: block; float: right; margin: -5px 5px 0 0; color: white; height: 18px; width: 25px; text-align: center; vertical-align: middle; line-height: 18px; border-radius: 3px; -webkit-app-region: no-drag; cursor: default; opacity: 0; }
 .webr-topbar span:hover { background: #eee; color: #3c3f41; }
 .webr-topbar:hover span { opacity: 1; }
 
-.webr-content { position: absolute; top: 18px; bottom: 0; left: 0; right: 0; }
-.webr-sidebar { position: absolute; top: 0; left: 0; bottom: 0; padding: 12px 6px; }
+.webr-content { display: flex; position: absolute; top: 18px; bottom: 0; left: 0; right: 0; }
+.webr-sidebar { flex: 0 0.5 300px; padding: 12px 7px; }
 .webr-sidebar-title { font-weight: bold; margin-bottom: 7px; padding: 5px 0 0 10px; }
 .webr-feeditem { position: relative; padding: 4px 4px 4px 10px; border-radius: 4px; }
 .webr-feeditem-saved { font-weight: bold; }
@@ -56,15 +55,14 @@ button:focus, .button:focus { box-shadow: 0 0 5px rgba(0, 32, 88, 0.8); outline:
 .webr-sidebar-controls { padding: 10px; font-size: 21px; }
 .webr-sidebar-controls div { margin-right: 10px; }
 
-.webr-mainpage { position: relative; height: 100%; border-left: 1px solid #ccc }
-.webr-maincontentarea { position: relative; width: 100%; height: 70%; }
-.webr-head-controls { position: relative; border-bottom: 1px solid #ccc; width: 100%; height: 40px; vertical-align: bottom; color: #07c }
+.webr-mainpage { flex: 1 0.5 500px; display: flex; flex-direction: column; border-left: 1px solid #ccc }
+.webr-head-controls { flex: 0 0 40px; position: relative; border-bottom: 1px solid #ccc; vertical-align: bottom; color: #07c }
 .webr-head-title { position: absolute; font-size: 19px; font-weight: bold; bottom: 0; padding: 0 0 6px 6px; }
 .webr-head-buttons { display: none; position: absolute; bottom: 0; right: 0; padding: 0 6px 4px 0; font-size: 23px; }
 .webr-head-buttons div { margin-right: 10px; cursor: pointer; }
 .webr-head-buttons div:hover { color: #004476; }
 
-.webr-maintext { font-size: 15px; padding: 15px 6px; overflow-y: auto; height: 100%; font-family: 'Lato', sans-serif; }
+.webr-maintext { flex: 1 0.6 400px; font-size: 15px; padding: 15px 6px; overflow-y: auto; font-family: 'Lato', sans-serif; }
 .webr-maintextitem-header { border-top: 2px solid #07c; border-bottom: 2px solid #07c; margin: 5px 0; padding: 5px; }
 .webr-maintextitem-title { float: left; font-size: 16px; font-weight: bold; }
 .webr-maintextitem-date { float: right; font-size: 14px; margin-top: 2px; }
@@ -72,7 +70,7 @@ button:focus, .button:focus { box-shadow: 0 0 5px rgba(0, 32, 88, 0.8); outline:
 .webr-paragraph { margin: 6px 0; line-height: 1.4; }
 .webr-paragraph img { max-width: 100%; }
 
-.webr-articlelist { padding: 8px; height: 30%; position: fixed; top: auto; bottom: 0; overflow-y: auto; border-top: 1px solid #ccc; z-index: 3; background: white; }
+.webr-articlelist { flex: 0 0.4 220px; padding: 8px; overflow-y: auto; border-top: 1px solid #ccc; z-index: 3; }
 .webr-articlelist table { width: 100%; border-collapse: collapse; }
 .webr-articlelisttable { padding: 8px; width: 100%; }
 .webr-articleitem { cursor: pointer; color: #555; width: 100%; }
@@ -85,18 +83,17 @@ button:focus, .button:focus { box-shadow: 0 0 5px rgba(0, 32, 88, 0.8); outline:
 .webr-articleitem-date { width: 25%; }
 
 .webr-overlay { display: none; position: absolute; top: 0; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.4); z-index: 10000; }
-.webr-ovd-container { position: relative; width: 100%; height: 100%; }
-.webr-ovd { display: table; z-index: 10010; padding: 10px; background: white; border-radius: 5px; width: 360px; height: 300px; text-align: center; vertical-align: middle; position: absolute; top: 50%; left: 50%; margin: -150px 0 0 -180px; }
-.webr-ovd-inner {  display: table-cell; vertical-align: middle; text-align: center; }
-.webr-ovd-inner td { text-align: left }
-.webr-ovdtitle { font-size: 120%; font-weight: bold; margin-bottom: 8px; }
+.webr-ovd-container { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+.webr-ovd { z-index: 10001; padding: 10px; background: white; border-radius: 5px; width: 360px; vertical-align: middle; text-align: center; }
+.webr-ovd td { text-align: left }
+.webr-ovdtitle { font-size: 120%; font-weight: bold; margin: 3px 0 8px 0; }
 #webr-ovd-addfeed input[type='text'], #webr-ovd-settings input[type='text'], #webr-ovd-settings input[type='number'] { width: 200px; }
 #webr-ovd-addfeed table, #webr-ovd-settings table { width: 340px; }
-#webr-ovd-editfeed { width: 480px; margin: -150px 0 0 -240px; }
+#webr-ovd-editfeed { width: 480px; }
 #webr-ovd-editfeed input[type='text'], #webr-ovd-editfeed-select { width: 175px; }
 #webr-ovd-editfeed-select { margin-right: 15px; }
 #webr-ovd-editfeed-outertable { width: 460px; }
 #webr-ovd-editfeed-innertable { width: 180px; }
 #webr-ovd-suggest-select { width: 250px; }
 
-.webr-notification-box { max-width: 50%; position: absolute; z-index: 20000; display: none; -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); border: 1px solid #3888e2; top: 58px; left: 250px; background-color: white; color: #3888e2; padding: 6px 14px; }
+.webr-notification-box { font-size: 1.05em; max-width: 50%; position: absolute; z-index: 20000; display: none; -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); border: 1px solid #3888e2; top: 58px; left: 250px; background-color: white; color: #3888e2; padding: 6px 14px; }
