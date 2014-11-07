@@ -8,6 +8,7 @@
     "title": "Web Reader",
     "toolbar": false,
     "frame": false,
+    "icon": "resources/icon.png",
     "width": 1200,
     "height": 750,
     "min_width": 650,

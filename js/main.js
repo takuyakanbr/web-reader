@@ -245,6 +245,7 @@ WEBR.Display = (function () {
         if (!feed || !link) {
             displayedPost = null;
             $maintext.html('No article selected.');
+            $('.webr-maintextarea').perfectScrollbar('update');
             return;
         }
         $maintext.html('Loading...');
@@ -252,6 +253,7 @@ WEBR.Display = (function () {
         if (!feed) {
             displayedPost = null;
             $maintext.html('Article not found.');
+            $('.webr-maintextarea').perfectScrollbar('update');
             return;
         }
         
@@ -259,6 +261,7 @@ WEBR.Display = (function () {
         displayedPost = post;
         if (!post) {
             $maintext.html('Article not found.');
+            $('.webr-maintextarea').perfectScrollbar('update');
             return;
         }
         
@@ -292,6 +295,7 @@ WEBR.Display = (function () {
                 _doRenderArticle(post, text);
             }, function (err) {
                 $maintext.html('Error loading article: ' + err);
+                $('.webr-maintextarea').perfectScrollbar('update');
             });
         }
     }
@@ -302,6 +306,7 @@ WEBR.Display = (function () {
             var html = '<div class="webr-maintextitem"><div class="webr-maintextitem-header"><div class="webr-maintextitem-title">' + post.title + ' </div> <div class="webr-maintextitem-date">' + moment(post.date).format('DD MMM YYYY hh:mm:ss a') + '</div><div class="webr-clearfix"></div></div><div class="webr-maintextitem-body">' + article + '</div></div>';
             $maintext.html(html);
             displayedPostLoaded = true;
+            $('.webr-maintextarea').perfectScrollbar('update');
         }
     }
     
@@ -334,6 +339,7 @@ WEBR.Display = (function () {
             $('<tr class="webr-articleitem"><td>No articles found.</td></tr>').appendTo($articlelist);
         }
         $('.webr-articlelist').scrollTop(0);
+        $('.webr-articlelist').perfectScrollbar('update');
     }
     
     // refresh the article list if feed matches displayedFeed
@@ -359,6 +365,7 @@ WEBR.Display = (function () {
         } else {
             $('<tr class="webr-articleitem"><td>No articles found.</td></tr>').appendTo($articlelist);
         }
+        $('.webr-articlelist').perfectScrollbar('update');
     }
     
     function renderArticleControls(feed) {
@@ -522,6 +529,8 @@ WEBR.Settings = (function () {
             guiWindow.minimize();
         });
         WEBR.Settings.apply();
+        $('.webr-maintextarea').perfectScrollbar({ suppressScrollX: true, includePadding: true });
+        $('.webr-articlelist').perfectScrollbar({ suppressScrollX: true, includePadding: true });
         
         
         // clicked feed list item

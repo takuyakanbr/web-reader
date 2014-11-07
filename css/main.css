@@ -43,15 +43,16 @@ button:focus, .button:focus { outline: none }
 .webr-head-buttons { display: none; position: absolute; bottom: 0; right: 0; padding: 0 6px 4px 0; font-size: 23px; }
 .webr-head-buttons div { margin-right: 10px; cursor: pointer; }
 
-.webr-maintext { flex: 1 0.6 400px; font-size: 15px; padding: 15px 6px; overflow-y: auto; font-family: 'Lato', sans-serif; }
+.webr-maintextarea { flex: 1 0.6 400px; padding: 15px 9px; position: relative; overflow: hidden; }
+.webr-maintext { font-size: 15px; font-family: 'Lato', sans-serif; }
 .webr-maintextitem-header { margin: 5px 0; padding: 5px; }
 .webr-maintextitem-title { float: left; font-size: 16px; font-weight: bold; }
 .webr-maintextitem-date { float: right; font-size: 14px; margin-top: 2px; }
 .webr-maintextitem-body { padding: 2px 7px 4px; }
 .webr-paragraph { margin: 6px 0; line-height: 1.4; }
-.webr-paragraph img { max-width: 100%; -webkit-filter: none; filter: none }
+.webr-paragraph img { max-width: 100% }
 
-.webr-articlelist { flex: 0 0.4 220px; padding: 8px; overflow-y: auto; z-index: 3; }
+.webr-articlelist { flex: 0 0.4 220px; padding: 8px 14px 8px 8px; position: relative; overflow: hidden; z-index: 3; }
 .webr-articlelist table { width: 100%; border-collapse: collapse; }
 .webr-articlelisttable { padding: 8px; width: 100%; }
 .webr-articleitem { cursor: pointer; width: 100%; }
@@ -114,7 +115,7 @@ button:focus, .button:focus { outline: none }
 .th-dark .webr-notification-box { -webkit-box-shadow: 0 0 10px rgba(230, 230, 230, 0.5); box-shadow: 0 0 10px rgba(230, 230, 230, 0.5); background-color: #333;  }
 
 /* Colour Schemes */
-.th-light a { color: #0058c9 }
+.th-light a { color: #0056c7 }
 .th-light button, .th-light .button { background-color: #0058c9 }
 .th-light a:hover { color: #0e209f }
 .th-light button:hover, .th-light .button:hover { background-color: #003889 }
