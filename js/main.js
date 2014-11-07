@@ -3,8 +3,79 @@ WEBR = {
     util: require('utils'),
     db: require('db'),
     cheerio: require('cheerio'),
-    moment: require('moment')
+    moment: require('moment'),
+    themes: ['Light', 'Dark']
 };
+WEBR.Misc = (function () {
+    
+    function hsvToRgb(hsv) {
+        var r, g, b;
+        var i;
+        var f, p, q, t;
+        var h, s, v;
+
+        h = Math.max(0, Math.min(360, hsv[0]));
+        s = Math.max(0, Math.min(100, hsv[1]));
+        v = Math.max(0, Math.min(100, hsv[2]));
+
+        s /= 100;
+        v /= 100;
+
+        if(s == 0) {
+            r = g = b = v;
+            return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+        }
+
+        h /= 60; // sector 0 to 5
+        i = Math.floor(h);
+        f = h - i; // factorial part of h
+        p = v * (1 - s);
+        q = v * (1 - s * f);
+        t = v * (1 - s * (1 - f));
+
+        switch(i) {
+            case 0:
+                r = v;
+                g = t;
+                b = p;
+                break;
+            case 1:
+                r = q;
+                g = v;
+                b = p;
+                break;
+            case 2:
+                r = p;
+                g = v;
+                b = t;
+                break;
+            case 3:
+                r = p;
+                g = q;
+                b = v;
+                break;
+            case 4:
+                r = t;
+                g = p;
+                b = v;
+                break;
+            default: // case 5:
+                r = v;
+                g = p;
+                b = q;
+        }
+        return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+    }
+
+    function rgbToStr(rgb) {
+        return 'rgb(' + rgb[0] + ', ' + rgb[1] + ', ' + rgb[2] + ')';
+    }
+    
+    return {
+        hsvToRgb: hsvToRgb,
+        rgbToStr: rgbToStr
+    };
+}());
 WEBR.Dialog = (function () {
     var $overlay = $('.webr-overlay'),
         isActive = false,
@@ -76,12 +147,18 @@ WEBR.Dialog = (function () {
     }
     
     function refreshSettingsDialog() {
-        var sett = db.settings;
+        var sett = db.settings,
+            $selectT = $('#webr-ovd-settings-theme').html('');
         $('#webr-ovd-settings-font').val(sett.articleFont);
         $('#webr-ovd-settings-fontsize').val(sett.articleFontSize);
         $('#webr-ovd-settings-lineheight').val(sett.lineHeight);
         $('#webr-ovd-settings-updaterate').val(sett.updateRate);
         $('#webr-ovd-settings-remove').val(sett.removeOlderThan);
+        $('#webr-ovd-settings-hue').val(sett.hue);
+        for (var i = 0; i < WEBR.themes.length; i++) {
+            var opt = $('<option class="webr-ovd-settings-theme-option"></option>').text(WEBR.themes[i]).data('id', i).appendTo($selectT);
+            if (i == sett.themeId) opt.prop('selected', true);
+        }
     }
     
     return {
@@ -355,13 +432,45 @@ WEBR.Display = (function () {
 WEBR.Settings = (function () {
     var db = WEBR.db;
     
-    return {
-        apply: function () {
-            $('.webr-maintext').css('font-size', db.settings.articleFontSize + 'px');
-            $('.webr-maintext').css('font-family', '\'' + db.settings.articleFont + '\', sans-serif');
-            jss.remove('.webr-paragraph');
-            jss.set('.webr-paragraph', { 'line-height': db.settings.lineHeight + '' });
+    function applyHue(hue) {
+        $('.webr-sidebar').css('-webkit-filter', 'hue-rotate(' + hue + 'deg)');
+        $('.webr-sidebar').css('filter', 'hue-rotate(' + hue + 'deg)');
+        $('.webr-head-controls').css('-webkit-filter', 'hue-rotate(' + hue + 'deg)');
+        $('.webr-head-controls').css('filter', 'hue-rotate(' + hue + 'deg)');
+        $('.webr-overlay').css('-webkit-filter', 'hue-rotate(' + hue + 'deg)');
+        $('.webr-overlay').css('filter', 'hue-rotate(' + hue + 'deg)');
+        $('.webr-notification-box').css('-webkit-filter', 'hue-rotate(' + hue + 'deg)');
+        $('.webr-notification-box').css('filter', 'hue-rotate(' + hue + 'deg)');
+        jss.remove('.webr-maintextitem-header');
+        jss.set('.webr-maintextitem-header', { '-webkit-filter': 'hue-rotate(' + hue + 'deg)', 'filter': 'hue-rotate(' + hue + 'deg)' });
+        var a = [214, 100, 78], aH = [233, 91, 62];
+        if (db.settings.themeId == 1) {
+            a = [206, 87, 95];
+            aH = [199, 80, 100];
         }
+        a[0] = (a[0] + hue) % 360;
+        aH[0] = (aH[0] + hue) % 360;
+        a = WEBR.Misc.hsvToRgb(a);
+        aH = WEBR.Misc.hsvToRgb(aH);
+        jss.remove('.webr-maintext a');
+        jss.remove('.webr-maintext a:hover');
+        jss.set('.webr-maintext a', { 'color': WEBR.Misc.rgbToStr(a) });
+        jss.set('.webr-maintext a:hover', { 'color': WEBR.Misc.rgbToStr(aH) });
+    }
+    
+    function apply() {
+        $('.webr-maintext').css('font-size', db.settings.articleFontSize + 'px');
+        $('.webr-maintext').css('font-family', '\'' + db.settings.articleFont + '\', sans-serif');
+        jss.remove('.webr-paragraph');
+        jss.set('.webr-paragraph', { 'line-height': db.settings.lineHeight + '' });
+        $('body').removeClass();
+        $('body').addClass('th-' + WEBR.themes[db.settings.themeId].toLowerCase());
+        applyHue(db.settings.hue);
+    }
+    
+    return {
+        applyHue: applyHue,
+        apply: apply
     };
 }());
 
@@ -603,12 +712,17 @@ WEBR.Settings = (function () {
                 db.settings.lineHeight = parseFloat($('#webr-ovd-settings-lineheight').val());
                 db.settings.updateRate = parseInt($('#webr-ovd-settings-updaterate').val());
                 db.settings.removeOlderThan = parseInt($('#webr-ovd-settings-remove').val());
+                db.settings.hue = parseInt($('#webr-ovd-settings-hue').val());
+                db.settings.themeId = parseInt($('.webr-ovd-settings-theme-option:selected').data('id'));
                 WEBR.Settings.apply();
                 db.saveSettings();
                 WEBR.Dialog.hide();
             } catch (e) {
                 WEBR.Notify.show('Error saving settings.', 1500);
             }
+        });
+        $('#webr-ovd-settings-hue').change(function () {
+            WEBR.Settings.applyHue(parseInt($('#webr-ovd-settings-hue').val()));
         });
     }
     

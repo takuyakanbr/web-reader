@@ -6,7 +6,7 @@
     <link href="../fontawesome/css/font-awesome.min.css" rel="stylesheet">
     <link href="../css/main.css" rel="stylesheet">
 </head>
-<body>
+<body class="th-light">
 
     <div class="webr-window">
     <div class="webr-topbar"><span id="webr-topbar-close">&times;</span><span id="webr-topbar-min">&minus;</span></div>
@@ -96,6 +96,8 @@
                     <tr><td><label class="hint" for="webr-ovd-settings-lineheight" title="Line height of paragraphs for displayed article">Line Height</label></td><td><input type="number" step="0.01" id="webr-ovd-settings-lineheight"/></td></tr>
                     <tr><td><label class="hint" for="webr-ovd-settings-updaterate" title="Frequency of automatic updating of feeds">Update Rate</label></td><td><input type="number" id="webr-ovd-settings-updaterate"/></td></tr>
                     <tr><td><label class="hint" for="webr-ovd-settings-remove" title="Amount of time to keep posts, after which they'll be removed">Keep Posts</label></td><td><input type="number" id="webr-ovd-settings-remove"/></td></tr>
+                    <tr><td><label class="hint" for="webr-ovd-settings-hue" title="Colour of application">Hue</label></td><td><input id="webr-ovd-settings-hue" type="range" min="0" max="359" step="1" value="0"/></td></tr>
+                    <tr><td><label class="hint" for="webr-ovd-settings-theme" title="Application colour theme">Theme</label></td><td><select id="webr-ovd-settings-theme"/></td></tr>
                     <tr><td></td><td><button id="webr-ovd-settings-submit">Save</button></td></tr>
                     </tbody></table>
                 </div>
@@ -103,13 +105,13 @@
             </div>
         </div>
 
-        </div>
+    </div>
 
-        <!-- NOTIFICATIONS -->
-        <div class="webr-notification-box">
-            <div class="webr-notification"></div>
-        </div>
-        
+    <!-- NOTIFICATIONS -->
+    <div class="webr-notification-box">
+        <div class="webr-notification"></div>
+    </div>
+    
     </div>
 
     <script src="../js/jss.min.js"></script>
