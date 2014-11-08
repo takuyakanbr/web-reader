@@ -306,6 +306,7 @@ WEBR.Display = (function () {
             var html = '<div class="webr-maintextitem"><div class="webr-maintextitem-header"><div class="webr-maintextitem-title">' + post.title + ' </div> <div class="webr-maintextitem-date">' + moment(post.date).format('DD MMM YYYY hh:mm:ss a') + '</div><div class="webr-clearfix"></div></div><div class="webr-maintextitem-body">' + article + '</div></div>';
             $maintext.html(html);
             displayedPostLoaded = true;
+            $('.webr-maintextarea').scrollTop(0);
             $('.webr-maintextarea').perfectScrollbar('update');
         }
     }
@@ -491,23 +492,15 @@ WEBR.Settings = (function () {
         cheerio = WEBR.cheerio,
         moment = WEBR.moment;
     
-    var wid = window.innerWidth,
-        hgt = window.innerHeight,
-        resizeTimerId = -1,
+    var resizeTimerId = -1,
         guiWindow = nwgui.Window.get();
     
     
     function setupHandlers() {
         var heightChangeCallback = function() {
-            var width = window.innerWidth,
-                height = window.innerHeight;
-            if (width != wid || height != hgt) {
-                clearTimeout(resizeTimerId);
-                resizeTimerId = setTimeout(doResize, 500);
-                WEBR.Notify.resize();
-                wid = width;
-                hgt = height;
-            }
+            clearTimeout(resizeTimerId);
+            resizeTimerId = setTimeout(doResize, 500);
+            WEBR.Notify.resize();
         };
         doResize();
         setInterval(db.pullAllFeeds, 60000);
@@ -515,12 +508,10 @@ WEBR.Settings = (function () {
         window.onfocus = function () {
             $('.webr-window').css('border', '2px solid #3c3f41');
             $('.webr-topbar').css('background-color', '#3c3f41');
-            $('.webr-articlelist').css('border-bottom', '2px solid #3c3f41');
         };
         window.onblur = function () {
             $('.webr-window').css('border', '2px solid #555759');
             $('.webr-topbar').css('background-color', '#555759');
-            $('.webr-articlelist').css('border-bottom', '2px solid #555759');
         };
         $('#webr-topbar-close').click(function () {
             guiWindow.close();
@@ -529,8 +520,8 @@ WEBR.Settings = (function () {
             guiWindow.minimize();
         });
         WEBR.Settings.apply();
-        $('.webr-maintextarea').perfectScrollbar({ suppressScrollX: true, includePadding: true });
-        $('.webr-articlelist').perfectScrollbar({ suppressScrollX: true, includePadding: true });
+        $('.webr-maintextarea').perfectScrollbar({ suppressScrollX: true, includePadding: true, minScrollbarLength: 15 });
+        $('.webr-articlelist').perfectScrollbar({ suppressScrollX: true, includePadding: true, minScrollbarLength: 15 });
         
         
         // clicked feed list item

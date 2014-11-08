@@ -52,7 +52,7 @@ button:focus, .button:focus { outline: none }
 .webr-paragraph { margin: 6px 0; line-height: 1.4; }
 .webr-paragraph img { max-width: 100% }
 
-.webr-articlelist { flex: 0 0.4 220px; padding: 8px 14px 8px 8px; position: relative; overflow: hidden; z-index: 3; }
+.webr-articlelist { flex: 0 0.4 220px; padding: 8px 14px 8px 8px; position: relative; overflow: hidden }
 .webr-articlelist table { width: 100%; border-collapse: collapse; }
 .webr-articlelisttable { padding: 8px; width: 100%; }
 .webr-articleitem { cursor: pointer; width: 100%; }
@@ -134,5 +134,5 @@ button:focus, .button:focus { outline: none }
 .th-dark .required:after { color: #0f7fff }
 .th-dark input:focus, .th-dark select:focus { border-color: #0f7fff }
 .th-dark .ctbutton, .th-dark .webr-head-controls { color: #07e }
-.th-dark .webr-maintextitem-header { border-top: 2px solid #07c; border-bottom: 2px solid #07c }
+.th-dark .webr-maintextitem-header { border-top: 2px solid #07d; border-bottom: 2px solid #07d }
 .th-dark .ctbutton:hover, .th-dark .webr-head-buttons div:hover { color: #28b9ff }
