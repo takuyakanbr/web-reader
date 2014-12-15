@@ -1,2 +1,2 @@
 @echo off
-start "" "..\nodewebkit0.10.2\nw.exe" .
+start "" "..\nodewebkit0.11.2\nw.exe" .
