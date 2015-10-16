@@ -10,7 +10,7 @@ Node-Webkit based RSS reader.
 - Scrape articles off webpages directly and automatically.
 - Stores whether you have read each article.
 - Save articles for future reference.
-- Customize font, font size, and line height.
+- Customize font, font size, line height, and highlight color.
 - All data stored locally (in `%LOCALAPPDATA%\web-reader`).
 
 ## Running
@@ -18,8 +18,8 @@ Node-Webkit based RSS reader.
 1. Make sure you have [Node.js](http://www.nodejs.org/) installed.
 2. Clone the repository.
 3. Use `npm install` in the root directory of the repository.
-4. Download [Node-Webkit](https://github.com/rogerwang/node-webkit#downloads) and place it in the root folder of the repository.
-5. Run the application using `nw.exe` from node-webkit.
+4. Download [NW.js](https://github.com/nwjs/nw.js#downloads) and place it in the root folder of the repository.
+5. Run the application using `nw.exe` from NW.js.
 
 ## Download
 
@@ -29,6 +29,6 @@ Alternatively, you can download one of these files containing a pre-built binary
 
 ## License
 
-(C) Copyright 2014 Daniel Teo
+(C) Copyright 2014-2015 Daniel Teo
 
 This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.

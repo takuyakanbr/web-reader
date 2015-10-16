@@ -136,3 +136,86 @@ button:focus, .button:focus { outline: none }
 .th-dark .ctbutton, .th-dark .webr-head-controls { color: #07e }
 .th-dark .webr-maintextitem-header { border-top: 2px solid #07d; border-bottom: 2px solid #07d }
 .th-dark .ctbutton:hover, .th-dark .webr-head-buttons div:hover { color: #28b9ff }
+
+/* Loading animation */
+.loading {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  font-size: 0;
+}
+.loading li {
+  height: 0;
+  position: absolute;
+  top: 25%;
+  left: 0;
+  width: 0;
+  margin: 0;
+  height: 10px;
+  width: 10px;
+  border: 3px solid #2b8ccd;
+  border-radius: 100%;
+  -webkit-transform: transformZ(0);
+          transform: transformZ(0);
+  -webkit-transform: scale(0.5);
+          transform: scale(0.5);
+  background: #2b8ccd;
+  -webkit-animation: LOADING 2s infinite;
+          animation: LOADING 2s infinite;
+}
+.loading li:nth-child(1n) {
+  left: -30px;
+  -webkit-animation-delay: 0s;
+          animation-delay: 0s;
+}
+.loading li:nth-child(2n) {
+  left: 0;
+  -webkit-animation-delay: 0.2s;
+          animation-delay: 0.2s;
+}
+.loading li:nth-child(3n) {
+  left: 30px;
+  -webkit-animation-delay: 0.4s;
+          animation-delay: 0.4s;
+}
+
+@-webkit-keyframes LOADING {
+  0% {
+    -webkit-transform: scale(0.5);
+            transform: scale(0.5);
+    background: #2b8ccd;
+  }
+  50% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    background: white;
+  }
+  100% {
+    -webkit-transform: scale(0.5);
+            transform: scale(0.5);
+    background: #2b8ccd;
+  }
+}
+
+@keyframes LOADING {
+  0% {
+    -webkit-transform: scale(0.5);
+            transform: scale(0.5);
+    background: #2b8ccd;
+  }
+  50% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    background: white;
+  }
+  100% {
+    -webkit-transform: scale(0.5);
+            transform: scale(0.5);
+    background: #2b8ccd;
+  }
+}

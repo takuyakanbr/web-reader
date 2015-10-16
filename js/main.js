@@ -236,6 +236,23 @@ WEBR.Display = (function () {
         displayedPost = null,
         displayedPostLoaded = false;
     
+    function _fadeInMainText() {
+        var $maintext = $('.webr-maintext');
+        $maintext.hide();
+        $maintext.fadeIn(300);
+    }
+    
+    function _fadeInArticleList() {
+        $articlelist.hide();
+        $articlelist.fadeIn(300);
+    }
+    
+    function _fadeInHeadControls() {
+        var $headControls = $('.webr-head-controls');
+        $headControls.hide();
+        $headControls.fadeIn(300);
+    }
+    
     // renders an article given feed ID and article link
     function renderArticle(feed, link) {
         displayedPostLoaded = false;
@@ -245,14 +262,16 @@ WEBR.Display = (function () {
         if (!feed || !link) {
             displayedPost = null;
             $maintext.html('No article selected.');
+            _fadeInMainText();
             $('.webr-maintextarea').perfectScrollbar('update');
             return;
         }
-        $maintext.html('Loading...');
+        $maintext.html('<ul class="loading"><li></li><li></li><li></li></ul>');
         
         if (!feed) {
             displayedPost = null;
             $maintext.html('Article not found.');
+            _fadeInMainText();
             $('.webr-maintextarea').perfectScrollbar('update');
             return;
         }
@@ -261,6 +280,7 @@ WEBR.Display = (function () {
         displayedPost = post;
         if (!post) {
             $maintext.html('Article not found.');
+            _fadeInMainText();
             $('.webr-maintextarea').perfectScrollbar('update');
             return;
         }
@@ -291,10 +311,12 @@ WEBR.Display = (function () {
             _doRenderArticle(post, post.desc);
             displayedPostLoaded = true;
         } else { // scrape data from link
+            _fadeInMainText();
             util.pullArticle(link, feed.append, feed.sel, feed.remove, function (text) {
                 _doRenderArticle(post, text);
             }, function (err) {
                 $maintext.html('Error loading article: ' + err);
+                _fadeInMainText();
                 $('.webr-maintextarea').perfectScrollbar('update');
             });
         }
@@ -305,6 +327,7 @@ WEBR.Display = (function () {
             var $maintext = $('.webr-maintext');
             var html = '<div class="webr-maintextitem"><div class="webr-maintextitem-header"><div class="webr-maintextitem-title">' + post.title + ' </div> <div class="webr-maintextitem-date">' + moment(post.date).format('DD MMM YYYY hh:mm:ss a') + '</div><div class="webr-clearfix"></div></div><div class="webr-maintextitem-body">' + article + '</div></div>';
             $maintext.html(html);
+            _fadeInMainText();
             displayedPostLoaded = true;
             $('.webr-maintextarea').scrollTop(0);
             $('.webr-maintextarea').perfectScrollbar('update');
@@ -317,6 +340,7 @@ WEBR.Display = (function () {
         renderArticleControls(feed);
         if (!feed) {
             $articlelist.html('No feed selected.');
+            _fadeInArticleList();
             return;
         }
         
@@ -339,6 +363,8 @@ WEBR.Display = (function () {
         } else {
             $('<tr class="webr-articleitem"><td>No articles found.</td></tr>').appendTo($articlelist);
         }
+        _fadeInHeadControls();
+        _fadeInArticleList();
         $('.webr-articlelist').scrollTop(0);
         $('.webr-articlelist').perfectScrollbar('update');
     }
@@ -449,6 +475,8 @@ WEBR.Settings = (function () {
         $('.webr-overlay').css('filter', 'hue-rotate(' + hue + 'deg)');
         $('.webr-notification-box').css('-webkit-filter', 'hue-rotate(' + hue + 'deg)');
         $('.webr-notification-box').css('filter', 'hue-rotate(' + hue + 'deg)');
+        jss.remove('.loading');
+        jss.set('.loading', { '-webkit-filter': 'hue-rotate(' + hue + 'deg)', 'filter': 'hue-rotate(' + hue + 'deg)' });
         jss.remove('.webr-maintextitem-header');
         jss.set('.webr-maintextitem-header', { '-webkit-filter': 'hue-rotate(' + hue + 'deg)', 'filter': 'hue-rotate(' + hue + 'deg)' });
         var a = [214, 100, 78], aH = [233, 91, 62];
