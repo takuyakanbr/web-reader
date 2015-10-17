@@ -8,9 +8,8 @@
 html, body { margin: 0; padding: 0; height: 100%; width: 100%; box-sizing: border-box; overflow: hidden; }
 div { box-sizing: border-box; margin: 0; padding: 0; }
 body, input, button, select, option { font-family: 'Lato', sans-serif; font-size: 14px; font-weight: 400; }
-a, input, textarea, button, select, .button, .ctbutton, .hdbutton, tr, .webr-feeditem, .webr-topbar span {
-    -webkit-transition: all .25s ease-in; -moz-transition: all .25s ease-in; -o-transition: all .25s ease-in;
-    transition: all .25s ease-in; text-decoration: none; }
+a, input, textarea, button, select, .button, .ctbutton, .hdbutton, tr, .webr-planitem, .webr-feeditem, .webr-topbar span {
+    -webkit-transition: all .25s ease-in; transition: all .25s ease-in; text-decoration: none; }
 input, select { padding: 5px; }
 input:focus, select:focus { outline: none; }
 button, .button { outline: 0 none; border: none; margin: 6px 0 3px;
@@ -30,10 +29,11 @@ button:focus, .button:focus { outline: none }
 .webr-content { display: flex; position: absolute; top: 18px; bottom: 0; left: 0; right: 0; }
 .webr-sidebar { flex: 0 0.5 300px; padding: 12px 7px; }
 .webr-sidebar-title { font-weight: bold; margin-bottom: 9px; padding: 5px 0 0 10px; }
-.webr-feeditem { position: relative; padding: 4px 4px 4px 10px; border-radius: 4px; }
+.webr-planlist { padding-bottom: 18px; }
+.webr-feeditem, .webr-planitem { position: relative; padding: 4px 4px 4px 10px; border-radius: 4px; }
 .webr-feeditem-saved { font-weight: bold; }
-.webr-feeditem a { display: inline-block; width: 90%; }
-.webr-feeditem-unread { position: absolute; top: 0; right: 0; border-radius: 2px; padding: 2px; font-weight: bold; z-index: 3;  margin: 1px 5px 0 }
+.webr-feeditem a, .webr-planitem a { display: inline-block; width: 90%; }
+.webr-feeditem-unread, .webr-planitem-unread { position: absolute; top: 0; right: 0; border-radius: 2px; padding: 2px; font-weight: bold; z-index: 3;  margin: 1px 5px 0 }
 .webr-sidebar-controls { padding: 13px 10px; font-size: 21px; }
 .webr-sidebar-controls div { margin-right: 10px; }
 
@@ -41,7 +41,7 @@ button:focus, .button:focus { outline: none }
 .webr-head-controls { flex: 0 0 40px; position: relative; vertical-align: bottom }
 .webr-head-title { position: absolute; font-size: 19px; font-weight: bold; bottom: 0; padding: 0 0 6px 6px; }
 .webr-head-buttons { display: none; position: absolute; bottom: 0; right: 0; padding: 0 6px 4px 0; font-size: 23px; }
-.webr-head-buttons div { margin-right: 10px; cursor: pointer; }
+.webr-head-buttons .hdbutton { margin-right: 10px; cursor: pointer; }
 
 .webr-maintextarea { flex: 1 0.6 400px; padding: 15px 9px; position: relative; overflow: hidden; }
 .webr-maintext { font-size: 15px; font-family: 'Lato', sans-serif; }
@@ -91,9 +91,10 @@ button:focus, .button:focus { outline: none }
 .th-light .webr-articleitem { color: #555; }
 .th-light .webr-articleitem:hover { color: black; }
 .th-light .webr-articleitem-unread { color: #222; }
-.th-light .webr-feeditem:hover, .th-light .webr-articleitem:hover { background-color: #f4f4f4; }
-.th-light .webr-feeditem-selected, .th-light .webr-articleitem-selected,
-.th-light .webr-feeditem-selected:hover, .th-light .webr-articleitem-selected:hover { background-color: #e8e8e8; }
+.th-light .webr-planitem:hover, .th-light .webr-feeditem:hover, .th-light .webr-articleitem:hover { background-color: #f4f4f4; }
+.th-light .webr-planitem-selected, .th-light .webr-feeditem-selected, .th-light .webr-articleitem-selected,
+.th-light .webr-planitem-selected:hover, .th-light .webr-feeditem-selected:hover, 
+.th-light .webr-articleitem-selected:hover { background-color: #e8e8e8; }
 .th-light .webr-notification-box { -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); background-color: white;  }
 
 
@@ -109,9 +110,10 @@ button:focus, .button:focus { outline: none }
 .th-dark .webr-articleitem { color: #999; }
 .th-dark .webr-articleitem:hover { color: #bbb; }
 .th-dark .webr-articleitem-unread { color: #ddd; }
-.th-dark .webr-feeditem:hover, .th-dark .webr-articleitem:hover { background-color: #414141; }
-.th-dark .webr-feeditem-selected, .th-dark .webr-articleitem-selected,
-.th-dark .webr-feeditem-selected:hover, .th-dark .webr-articleitem-selected:hover { background-color: #5c5c5c; }
+.th-dark .webr-planitem:hover, .th-dark .webr-feeditem:hover, .th-dark .webr-articleitem:hover { background-color: #414141; }
+.th-dark .webr-planitem-selected, .th-dark .webr-feeditem-selected, .th-dark .webr-articleitem-selected,
+.th-dark .webr-planitem-selected:hover, .th-dark .webr-feeditem-selected:hover, 
+.th-dark .webr-articleitem-selected:hover { background-color: #5c5c5c; }
 .th-dark .webr-notification-box { -webkit-box-shadow: 0 0 10px rgba(230, 230, 230, 0.5); box-shadow: 0 0 10px rgba(230, 230, 230, 0.5); background-color: #333;  }
 
 /* Colour Schemes */
@@ -124,7 +126,7 @@ button:focus, .button:focus { outline: none }
 .th-light input:focus, .th-light select:focus { border-color: #003889 }
 .th-light .ctbutton, .th-light .webr-head-controls { color: #07c }
 .th-light .webr-maintextitem-header { border-top: 2px solid #07c; border-bottom: 2px solid #07c }
-.th-light .ctbutton:hover, .th-light .webr-head-buttons div:hover { color: #004476 }
+.th-light .ctbutton:hover, .th-light .webr-head-buttons .hdbutton:hover { color: #004476 }
 
 .th-dark a { color: #209fff }
 .th-dark button, .th-dark .button { background-color: #209fff }
@@ -135,7 +137,19 @@ button:focus, .button:focus { outline: none }
 .th-dark input:focus, .th-dark select:focus { border-color: #0f7fff }
 .th-dark .ctbutton, .th-dark .webr-head-controls { color: #07e }
 .th-dark .webr-maintextitem-header { border-top: 2px solid #07d; border-bottom: 2px solid #07d }
-.th-dark .ctbutton:hover, .th-dark .webr-head-buttons div:hover { color: #28b9ff }
+.th-dark .ctbutton:hover, .th-dark .webr-head-buttons .hdbutton:hover { color: #28b9ff }
+
+/* Search box */
+#webr-hdb-search-area { margin-right: -13px; }
+.search-box { -webkit-transition: all 0.5s; transition: all 0.5s;
+  width: 24px; height: 24px; padding: 0; border-radius: 12px;
+  border: none; cursor: pointer; }
+.search-box:focus, .search-box-focus { -webkit-transition: all 0.5s; transition: all 0.5s;
+  outline: none; box-shadow: none; cursor: text;
+  padding: 0 10px; width: 220px; border-radius: auto; background: #ebebeb; }
+.search-box:not(:focus) { text-indent: -5000px; }
+.search-box-focus:not(:focus) { text-indent: 0; }
+.search-icon { position: relative; font-size: 0.8em; left: -26px; cursor: pointer; }
 
 /* Loading animation */
 .loading {

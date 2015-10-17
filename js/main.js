@@ -232,6 +232,7 @@ WEBR.Display = (function () {
         $headbuttonsarticle = $('.webr-head-buttons-article'),
         $starbtn = $('#webr-hdb-star'),
         $unstarbtn = $('#webr-hdb-unstar'),
+        $searchbox = $('#webr-hdb-search-box'),
         displayedFeed = null,
         displayedPost = null,
         displayedPostLoaded = false;
@@ -337,6 +338,7 @@ WEBR.Display = (function () {
     // resets list of articles
     function renderArticleList(feed) {
         displayedFeed = feed;
+        _resetSearchBox();
         renderArticleControls(feed);
         if (!feed) {
             $articlelist.html('No feed selected.');
@@ -370,14 +372,20 @@ WEBR.Display = (function () {
     }
     
     // refresh the article list if feed matches displayedFeed
-    function refreshArticleList(feed) {
+    function refreshArticleList(feed, search) {
         if (!feed || !displayedFeed) return;
         if (feed.rss != displayedFeed.rss) return;
         
         $articlelist.html('');
         var cont = db.content[feed.rss];
+        var count = 0;
+        var ss = null;
+        if (search && search.length > 0) ss = search.toLowerCase();
         if (cont && cont.length > 0) {
             for (var i in cont) {
+                if (ss) {
+                    if (cont[i].title.toLowerCase().indexOf(ss) < 0) continue;
+                }
                 var $tr = $('<tr class="webr-articleitem"></tr>').data('link', cont[i].link).data('rss', feed.rss);
                 $('<td class="webr-articleitem-title"></td>').html(cont[i].title).appendTo($tr);
                 $('<td class="webr-articleitem-date"></td>').html(moment(cont[i].date).format('DD MMM YYYY hh:mm:ss a')).appendTo($tr);
@@ -388,10 +396,11 @@ WEBR.Display = (function () {
                     $tr.addClass('webr-articleitem-selected');
                 }
                 $tr.appendTo($articlelist);
+                count++;
             }
-        } else {
-            $('<tr class="webr-articleitem"><td>No articles found.</td></tr>').appendTo($articlelist);
         }
+        if (count == 0) $('<tr class="webr-articleitem"><td>No articles found.</td></tr>').appendTo($articlelist);
+        _fadeInArticleList();
         $('.webr-articlelist').perfectScrollbar('update');
     }
     
@@ -450,6 +459,18 @@ WEBR.Display = (function () {
         }
     }
     
+    function doSearch() {
+        var text = $searchbox.val();
+        if (!text || text.length == 0) _resetSearchBox();
+        else if (!$searchbox.hasClass('search-box-focus')) $searchbox.addClass('search-box-focus');
+        refreshArticleList(displayedFeed, text);
+    }
+    
+    function _resetSearchBox() {
+        $searchbox.removeClass('search-box-focus');
+        $searchbox.val('');
+    }
+    
     return {
         getDisplayedFeed: function() { return displayedFeed },
         getDisplayedPost: function() { return displayedPost },
@@ -460,7 +481,8 @@ WEBR.Display = (function () {
         refreshArticleList: refreshArticleList,
         renderArticleControls: renderArticleControls,
         renderFeedList: renderFeedList,
-        updateUnreadCount: updateUnreadCount
+        updateUnreadCount: updateUnreadCount,
+        doSearch: doSearch
     };
 }());
 WEBR.Settings = (function () {
@@ -648,6 +670,10 @@ WEBR.Settings = (function () {
             var post = WEBR.Display.getDisplayedPost();
             if (!post) return;
             nwgui.Shell.openExternal(post.link);
+        });
+        
+        $('#webr-hdb-search-box').on('input', function () {
+            WEBR.Display.doSearch();
         });
         
         
